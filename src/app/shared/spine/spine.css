@@ -1,0 +1,169 @@
+:host {
+  display: block;
+  flex: none;
+}
+
+/* The button carries the lift and the focus ring; .body carries the look, so the
+   offline opacity never dims the focus ring. */
+.spine {
+  display: block;
+  padding: 0;
+  border: 0;
+  border-radius: var(--alc-radius-book);
+  background: none;
+  cursor: pointer;
+  transition: transform var(--alc-dur-lift) var(--alc-ease);
+}
+.spine:focus-visible,
+.spine:active {
+  transform: translateY(var(--alc-lift));
+}
+@media (hover: hover) {
+  .spine:hover {
+    transform: translateY(var(--alc-lift));
+  }
+}
+
+.body {
+  position: relative;
+  display: block;
+  height: 100%;
+  overflow: hidden;
+  border-radius: var(--alc-radius-book);
+  color: var(--ink);
+  background: var(--alc-spine-round), var(--cloth);
+  box-shadow: var(--alc-elev-1);
+}
+.body > * {
+  position: absolute;
+}
+.downloading {
+  opacity: var(--alc-spine-opacity-downloading);
+}
+.offline {
+  opacity: var(--alc-spine-opacity-offline);
+  filter: saturate(var(--alc-spine-saturate-offline));
+}
+
+/* Styles */
+.cloth {
+  background: var(--alc-spine-round), var(--alc-spine-weave), var(--cloth);
+}
+.foil {
+  inset-inline: var(--alc-space-1);
+  top: var(--alc-space-2);
+  height: var(--alc-space-1);
+  border-block: 1px solid var(--alc-spine-foil);
+}
+.head-band {
+  inset-inline: 0;
+  top: 0;
+  height: var(--alc-spine-band-share);
+  background: var(--alc-spine-round), var(--ink);
+}
+.numeral {
+  top: var(--alc-spine-pad-head);
+  left: 50%;
+  translate: -50% 0;
+  display: grid;
+  place-items: center;
+  width: var(--alc-spine-mark-numeral);
+  height: var(--alc-spine-mark-numeral);
+  border: 1px solid currentColor;
+  border-radius: 50%;
+  font: 500 calc(var(--alc-spine-mark-numeral) * 0.6) / 1 var(--alc-font-display);
+}
+
+/* Title and author run top to bottom; the author sits at the foot end. */
+.text {
+  left: var(--alc-spine-pad-side);
+  right: var(--alc-spine-pad-side);
+  bottom: var(--alc-spine-pad-foot);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--alc-spine-gap);
+  writing-mode: vertical-rl;
+  white-space: nowrap;
+  font-family: var(--alc-font-display);
+  line-height: var(--alc-spine-line-height);
+}
+.caps {
+  font-family: var(--alc-font-ui);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: var(--alc-spine-tracking-caps);
+}
+/* Lines stack right to left, like any vertical-rl text; each one ellipsizes on its own. */
+.title {
+  display: block;
+  min-inline-size: 0;
+}
+.line {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.bold .title {
+  font-weight: 700;
+}
+.author {
+  opacity: 0.8;
+}
+
+/* State marks */
+.read {
+  left: 0;
+  bottom: 0;
+  width: var(--alc-spine-mark-line);
+  height: 100%;
+  background: var(--alc-lamp);
+  transform-origin: bottom;
+}
+.mark {
+  bottom: var(--alc-space-2);
+  left: 50%;
+  translate: -50% 0;
+}
+.dot {
+  width: var(--alc-spine-mark-dot);
+  height: var(--alc-spine-mark-dot);
+  border-radius: 50%;
+  background: var(--alc-accent);
+}
+.icon {
+  width: var(--alc-spine-mark-icon);
+  height: var(--alc-spine-mark-icon);
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.ring {
+  rotate: -90deg;
+}
+.ring .track {
+  opacity: 0.3;
+}
+
+/* Reduced motion: no lift (--alc-lift is 0); a highlight crossfades in instead. */
+@media (prefers-reduced-motion: reduce) {
+  .body::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--alc-spine-highlight);
+    opacity: 0;
+    transition: opacity var(--alc-dur-fade) var(--alc-ease);
+  }
+  .spine:focus-visible .body::after,
+  .spine:active .body::after {
+    opacity: 1;
+  }
+}
+@media (prefers-reduced-motion: reduce) and (hover: hover) {
+  .spine:hover .body::after {
+    opacity: 1;
+  }
+}

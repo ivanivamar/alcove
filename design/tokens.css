@@ -197,3 +197,67 @@
   --alc-z-toast: 60;
   --alc-z-transition: 70;   /* the travelling book */
 }
+
+/* ---------------------------------------------------------------- */
+/* Spines (alc-spine, spec §4.1)                                     */
+/* Books are objects: cloth colours are the same in both themes.     */
+/* Ratios are title ink on that cloth.                               */
+/* ---------------------------------------------------------------- */
+:root {
+  --alc-cloth-oxblood: #6B2B2B;    /* light ink 8.5:1 */
+  --alc-cloth-moss: #3E5638;       /* 6.5:1 */
+  --alc-cloth-navy: #25374F;       /* 9.8:1 */
+  --alc-cloth-slate: #3C4550;      /* 7.9:1 */
+  --alc-cloth-plum: #4D3350;       /* 8.9:1 */
+  --alc-cloth-ochre: #7A5418;      /* 5.5:1 */
+  --alc-cloth-teal: #21504E;       /* 7.3:1 */
+  --alc-cloth-charcoal: #2F2C29;   /* 11.2:1 */
+  --alc-cloth-rust: #83391F;       /* 6.6:1 */
+  --alc-cloth-forest: #2C4434;     /* 8.6:1 */
+  --alc-cloth-linen: #E4DAC5;      /* dark ink 10.8:1 */
+  --alc-cloth-straw: #DFCB98;      /* dark ink 9.4:1 */
+  --alc-cloth-mist: #C9D3D0;       /* dark ink 9.8:1 */
+  --alc-cloth-blush: #E2C4B8;      /* dark ink 9.2:1 */
+
+  --alc-spine-ink-light: #EFE6D6;  /* title on the dark cloths */
+  --alc-spine-ink-dark: #2A2622;   /* title on linen, straw, mist, blush */
+  --alc-spine-foil: #D9B872;       /* cloth foil rules, decorative */
+
+  /* Title fitting. Mirrored in tokens.json "spine", which the fit function reads. */
+  --alc-spine-type-cloth: 13px;    /* base title size per style; capped at 0.56 × width */
+  --alc-spine-type-paper: 12px;
+  --alc-spine-type-bold: 12px;
+  --alc-spine-type-band: 11px;
+  --alc-spine-type-series: 12px;
+  --alc-spine-type-min: 8px;
+  --alc-spine-author-scale: 0.8;   /* author size relative to the title */
+  --alc-spine-tracking-caps: 0.06em;
+  --alc-spine-pad-head: 10px;      /* clear space above the title */
+  --alc-spine-pad-foot: 22px;      /* room for the state mark */
+  --alc-spine-gap: 8px;            /* between title and author */
+  --alc-spine-pad-side: 3px;       /* either side of a two-line title */
+  --alc-spine-line-height: 1.15;   /* title lines; two fit when width ≥ 2 × size × 1.15 + 6 */
+  --alc-spine-head-cloth: 16px;    /* extra head room for the foil rules */
+  --alc-spine-head-series: 24px;   /* extra head room for the numeral */
+  --alc-spine-band-share: 20%;     /* band style: colour band over the top fifth */
+  --alc-spine-density-compact: 0.85;
+
+  /* Shading. Lamp upper left: lit left edge, shaded right edge and foot. */
+  --alc-spine-round:
+    linear-gradient(90deg, rgba(255, 255, 255, .16) 0, rgba(255, 255, 255, .05) 22%, transparent 48%, rgba(0, 0, 0, .10) 78%, rgba(0, 0, 0, .26) 100%),
+    linear-gradient(180deg, rgba(255, 255, 255, .06) 0, transparent 30%, rgba(0, 0, 0, .10) 100%);
+  --alc-spine-weave:
+    repeating-linear-gradient(0deg, rgba(0, 0, 0, .09) 0 1px, transparent 1px 2px),
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, .05) 0 1px, transparent 1px 2px);
+  --alc-spine-highlight: rgba(255, 255, 255, .10);   /* reduced motion: hover crossfades this in */
+
+  /* State marks at the foot */
+  --alc-spine-mark-dot: 6px;       /* New: sage dot */
+  --alc-spine-mark-line: 2px;      /* Reading: amber line, as long as the share read */
+  --alc-spine-mark-icon: 10px;     /* Finished check, download ring, cloud */
+  --alc-spine-mark-numeral: 14px;  /* series: circled numeral near the head */
+  --alc-shelf-spine-gap: 2px;      /* between spines on a shelf (spec §4.3) */
+  --alc-spine-opacity-downloading: 0.72;
+  --alc-spine-opacity-offline: 0.42;   /* spec §8 */
+  --alc-spine-saturate-offline: 0.4;
+}
