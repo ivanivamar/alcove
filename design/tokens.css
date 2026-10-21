@@ -43,8 +43,8 @@
   --alc-wood-top: #80593F;         /* lit top face of a board */
   --alc-wood-under: #533826;       /* shadowed underside */
   --alc-bookend: #4A4540;
-  --alc-scrollbar-thumb: #80593F;        /* wood, 3.1:1 on bay */
-  --alc-scrollbar-thumb-hover: #9A7050;  /* 4.3:1 on bay */
+  --alc-scrollbar-thumb: #94694A;        /* wood, ≥ 3.2:1 on every surface (raised is lowest) */
+  --alc-scrollbar-thumb-hover: #A87D58;  /* ≥ 4.2:1 */
 }
 
 /* ---------------------------------------------------------------- */
@@ -79,8 +79,8 @@
   --alc-wood-top: #DABF94;
   --alc-wood-under: #B08F60;
   --alc-bookend: #9A948B;
-  --alc-scrollbar-thumb: #9A7B4F;        /* 3.2:1 on bay */
-  --alc-scrollbar-thumb-hover: #7E6038;  /* 4.8:1 on bay */
+  --alc-scrollbar-thumb: #9A7B4F;        /* ≥ 3.2:1 on every surface (bay is lowest) */
+  --alc-scrollbar-thumb-hover: #7E6038;  /* ≥ 4.8:1 */
 }
 
 @media (prefers-color-scheme: light) {
@@ -149,6 +149,7 @@
   --alc-rail-width: 72px;
   --alc-bottom-bar-height: 64px;  /* plus env(safe-area-inset-bottom) */
   --alc-cloth-board: 14px;        /* boards around the reader pages (7px on phone) */
+  --alc-scrollbar-size: 8px;      /* every scrollbar: a wood thumb on a clear track ("thin" in Firefox) */
 
   /* One light source, upper left: shadows fall down and to the right. */
   --alc-elev-0: 0 0 0 1px var(--alc-hairline);
@@ -354,9 +355,6 @@
   --alc-ledge-cover-desktop: 104px;  /* compact density multiplies all three by 0.85 */
   --alc-ledge-meta-width: 176px;     /* title, author, progress and Continue beside a cover */
   --alc-ledge-gap: 24px;             /* between books on the board */
-
-  /* Sideways scrollbars (the ledge): a thin wood thumb on a clear track. */
-  --alc-scrollbar-size: 8px;         /* where the browser lets us set it; "thin" elsewhere */
 
   /* "Time left" assumes this reading speed until the reader measures the user's own. */
   --alc-reading-pages-per-minute: 1.3;
