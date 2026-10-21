@@ -15,6 +15,9 @@
   (pointermove)="onPointerMove($event)"
   (pointerup)="onPointerUp($event)"
   (pointercancel)="onPointerUp($event)"
+  (pointerleave)="onPointerLeave()"
+  (focus)="onFocus($event)"
+  (blur)="onBlur()"
 >
   <span class="rail" #rail>
     <span class="read" [style.width.%]="read()"></span>
@@ -22,6 +25,12 @@
       <span class="notch" [style.left.%]="at"></span>
     }
     <span class="knob" [style.left.%]="read()"></span>
+    <span class="tip" aria-hidden="true" [class.shown]="tip()" [style.--at]="lastTip()?.at">
+      @if (lastTip()?.chapter; as chapter) {
+        <span class="tip-chapter">{{ chapter }}</span>
+      }
+      <span class="tip-page">{{ lastTip()?.page }}</span>
+    </span>
   </span>
 </div>
 

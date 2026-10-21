@@ -85,3 +85,46 @@
   white-space: nowrap;
   text-overflow: ellipsis;
 }
+
+/* The tooltip, above the knob. At --at along the rail, shifted back by the same share of its own
+   width, so it stays over the rail at either end; the arrow sits at --at within it. */
+.tip {
+  position: absolute;
+  z-index: var(--alc-z-popover);
+  bottom: calc(
+    100% + var(--alc-progress-knob) / 2 + var(--alc-progress-halo) + var(--alc-tooltip-gap)
+  );
+  left: var(--at);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--alc-space-1) var(--alc-space-2);
+  translate: calc(var(--at) * -1) 0;
+  border-radius: var(--alc-radius-control);
+  background: var(--alc-paper);
+  box-shadow: var(--alc-elev-3);
+  color: var(--alc-ink);
+  font: var(--alc-type-label);
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity var(--alc-dur-fade) var(--alc-ease);
+}
+.tip.shown {
+  opacity: 1;
+}
+.tip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: clamp(var(--alc-radius-control), var(--at), 100% - var(--alc-radius-control));
+  width: var(--alc-tooltip-arrow);
+  height: var(--alc-tooltip-arrow);
+  translate: -50% -50%;
+  rotate: 45deg;
+  background: var(--alc-paper);
+  box-shadow: 1px 1px 0 var(--alc-hairline);
+}
+.tip-chapter {
+  font: var(--alc-type-folio);
+}

@@ -174,4 +174,78 @@ describe('ShelfProgress', () => {
     await press(fixture, slider, 'End');
     expect(now(slider)).toBe(1);
   });
+
+  describe('tooltip', () => {
+    async function setUp(options: Options = {}) {
+      const rendered = await render(options);
+      const rail = rendered.el.querySelector<HTMLElement>('.rail')!;
+      rail.getBoundingClientRect = () => ({ left: 100, width: 190 }) as DOMRect;
+      const tip = rendered.el.querySelector<HTMLElement>('.tip')!;
+      const pointer = async (type: string, clientX: number, pointerType = 'mouse') => {
+        rendered.slider.dispatchEvent(
+          new PointerEvent(type, {
+            pointerId: 1,
+            isPrimary: true,
+            pointerType,
+            clientX,
+            bubbles: true,
+          }),
+        );
+        await rendered.fixture.whenStable();
+      };
+      const text = () => [...tip.children].map((c) => c.textContent);
+      const shown = () => tip.classList.contains('shown');
+      return { ...rendered, tip, pointer, text, shown };
+    }
+
+    it('is hidden at rest, and from assistive tech always', async () => {
+      const { tip, shown } = await setUp({ page: 7 });
+      expect(shown()).toBe(false);
+      expect(tip.getAttribute('aria-hidden')).toBe('true');
+    });
+
+    it('names the page and chapter under a hovering mouse, without moving', async () => {
+      const { fixture, tip, pointer, text, shown, slider } = await setUp({ page: 7 });
+      await pointer('pointermove', 250); // 150 / 190 of 19 = page 15
+      expect(shown()).toBe(true);
+      expect(text()).toEqual(['The Spouter-Inn', 'Page 16 of 20']);
+      expect(tip.style.getPropertyValue('--at')).toBe(`${(15 / 19) * 100}%`);
+      expect(now(slider)).toBe(8);
+      expect(fixture.componentInstance.page()).toBe(7);
+
+      await pointer('pointerleave', 250);
+      expect(shown()).toBe(false);
+      expect(text()).toEqual(['The Spouter-Inn', 'Page 16 of 20']); // kept while it fades
+    });
+
+    it('follows the knob while dragging, on touch too', async () => {
+      const { pointer, text, shown } = await setUp();
+      await pointer('pointermove', 250, 'touch');
+      expect(shown()).toBe(false);
+      await pointer('pointerdown', 150, 'touch');
+      expect(text()).toEqual(['Loomings', 'Page 6 of 20']);
+      await pointer('pointermove', 180, 'touch');
+      expect(text()).toEqual(['The Carpet-Bag', 'Page 9 of 20']);
+      await pointer('pointerup', 180, 'touch');
+      expect(shown()).toBe(false);
+    });
+
+    it('shows at the knob when a key moves it, until focus leaves', async () => {
+      const { fixture, slider, text, shown } = await setUp({ page: 4 });
+      slider.focus();
+      await press(fixture, slider, 'PageDown');
+      expect(shown()).toBe(true);
+      expect(text()).toEqual(['The Carpet-Bag', 'Page 7 of 20']);
+      slider.blur();
+      await fixture.whenStable();
+      expect(shown()).toBe(false);
+    });
+
+    it('leaves out the chapter before the first one', async () => {
+      const { fixture, pointer, text } = await setUp();
+      fixture.componentRef.setInput('chapters', [{ start: 5, number: 1, name: 'Loomings' }]);
+      await pointer('pointermove', 110);
+      expect(text()).toEqual(['Page 2 of 20']);
+    });
+  });
 });

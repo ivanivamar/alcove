@@ -75,6 +75,27 @@ describe('ReaderPage', () => {
     const controls = (el: HTMLElement) => el.querySelector('.controls')!;
     const shown = (el: HTMLElement) => controls(el).classList.contains('shown');
 
+    it('stay shown on desktop, whatever the middle third and Escape do', async () => {
+      TestBed.overrideProvider(BreakpointObserver, {
+        useValue: { observe: () => of({ matches: true }), isMatched: () => true },
+      });
+      const { harness, el } = await open('/read/bk-moby');
+      expect(shown(el)).toBe(true);
+      expect(el.querySelector('.labels')!.classList).toContain('shown');
+      const focused = document.activeElement;
+      el.querySelector('[data-block]')!.dispatchEvent(
+        new MouseEvent('click', { bubbles: true, detail: 1 }),
+      );
+      await harness.fixture.whenStable();
+      expect(shown(el)).toBe(true);
+      document.activeElement!.dispatchEvent(
+        new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true }),
+      );
+      await harness.fixture.whenStable();
+      expect(shown(el)).toBe(true);
+      expect(document.activeElement).toBe(focused);
+    });
+
     async function press(harness: RouterTestingHarness, key: string) {
       const target = document.activeElement ?? document.body;
       target.dispatchEvent(new KeyboardEvent('keydown', { key, bubbles: true, cancelable: true }));

@@ -1,5 +1,5 @@
 @if (book(); as book) {
-  <header class="controls" [class.shown]="controlsShown()" (focusin)="showControls()">
+  <header class="controls" [class.shown]="controlsVisible()" (focusin)="showControls()">
     <a class="pill back" routerLink="/library">
       <alc-icon name="back" [size]="20" />
       <alc-spine [book]="book" [scale]="spineScale" [decorative]="true" />
@@ -37,7 +37,7 @@
       [perView]="perView()"
       [chapters]="chapters()"
       [timeLeft]="chapterTimeLeft()"
-      [labelsShown]="controlsShown()"
+      [labelsShown]="controlsVisible()"
       (focusin)="showControls()"
     />
   </div>

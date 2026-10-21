@@ -410,6 +410,8 @@
   --alc-progress-knob: 14px;
   --alc-progress-halo: 3px;
   --alc-progress-halo-color: color-mix(in srgb, var(--alc-lamp) 32%, transparent);
+  --alc-tooltip-gap: 8px;          /* between the knob and its tooltip */
+  --alc-tooltip-arrow: 8px;
 
   /* Swipes on the pages (spec §5): further than this sideways turns, less is a tap. */
   --alc-swipe-turn: 48px;
