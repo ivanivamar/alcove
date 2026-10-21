@@ -391,10 +391,6 @@
   --alc-chapter-rule: 36px;        /* the amber rule under the chapter name */
   --alc-chapter-rule-weight: 2px;
   --alc-drop-cap-lines: 3;
-
-  /* Keyboard focus on a page-turn zone: a chevron at the page edge in the page accent. */
-  --alc-turn-hint: 10px;
-  --alc-turn-hint-weight: 2px;
 }
 
 /* ---------------------------------------------------------------- */
