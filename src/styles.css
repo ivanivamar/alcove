@@ -1,0 +1,63 @@
+/* Global base styles. Every value comes from design/tokens.css. */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background: var(--alc-wall);
+  color: var(--alc-ink);
+  font: var(--alc-type-body);
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+a {
+  color: var(--alc-accent);
+}
+
+/* Focus: 2 px accent outline, 3 px offset (spec §7). */
+:focus-visible {
+  outline: 2px solid var(--alc-accent);
+  outline-offset: 3px;
+}
+
+.alc-visually-hidden {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Reduced motion: every movement becomes a 200 ms crossfade (spec §5). */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-property: opacity !important;
+    transition-duration: var(--alc-dur-fade) !important;
+    animation-duration: var(--alc-dur-fade) !important;
+    scroll-behavior: auto !important;
+  }
+}

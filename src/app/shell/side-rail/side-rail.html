@@ -1,0 +1,22 @@
+<nav class="rail" aria-label="Main">
+  <ul class="group">
+    @for (item of top; track item.path) {
+      <li>
+        <a class="item" [routerLink]="item.path" routerLinkActive="is-active" ariaCurrentWhenActive="page">
+          <span class="pill"><alc-icon [name]="item.icon" /></span>
+          <span class="label">{{ item.label }}</span>
+        </a>
+      </li>
+    }
+  </ul>
+  <ul class="group">
+    @for (item of bottom; track item.path) {
+      <li>
+        <a class="item" [routerLink]="item.path" routerLinkActive="is-active" ariaCurrentWhenActive="page">
+          <span class="pill"><alc-icon [name]="item.icon" /></span>
+          <span class="label">{{ item.label }}</span>
+        </a>
+      </li>
+    }
+  </ul>
+</nav>

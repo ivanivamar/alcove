@@ -1,0 +1,64 @@
+:host {
+  display: block;
+  width: var(--alc-rail-width);
+  height: 100dvh;
+  position: sticky;
+  top: 0;
+  z-index: var(--alc-z-rail);
+  background: var(--alc-rail);
+  border-right: 1px solid var(--alc-hairline);
+}
+
+.rail {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+  padding: var(--alc-space-3) 0;
+}
+
+.group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--alc-space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--alc-space-1);
+  min-height: var(--alc-touch);
+  padding: var(--alc-space-1) 0;
+  color: var(--alc-ink-muted);
+  text-decoration: none;
+  border-radius: var(--alc-radius-control);
+}
+
+.pill {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 32px;
+  border-radius: var(--alc-radius-control);
+}
+
+.label {
+  font: var(--alc-type-caption);
+  font-weight: 500;
+}
+
+.item:hover {
+  color: var(--alc-ink);
+}
+
+.item.is-active {
+  color: var(--alc-accent);
+}
+
+.item.is-active .pill {
+  background: var(--alc-raised);
+}
