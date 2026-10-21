@@ -1,6 +1,6 @@
 import { Book } from '../../core/book';
 import { MOCK_BOOKS } from '../../core/mock-books';
-import { fitSpineTitle, spineHeight, spineLabel, spineWidth } from './spine-geometry';
+import { fitSpineTitle, spineHeight, spineLabel, spineWidth, splitTitle } from './spine-geometry';
 
 describe('spineWidth', () => {
   it('follows round((16 + pages × 0.034) × scale)', () => {
@@ -41,6 +41,7 @@ describe('fitSpineTitle', () => {
       titleSize: 13,
       authorSize: 10,
       showAuthor: true,
+      lines: ['Emma'],
       truncated: false,
     });
   });
@@ -57,11 +58,13 @@ describe('fitSpineTitle', () => {
     const fit = fitSpineTitle({ ...base, title: 'Middlemarch', author: 'George Eliot' });
     expect(fit.showAuthor).toBe(false);
     expect(fit.titleSize).toBe(13);
+    expect(fit.lines).toEqual(['Middlemarch']);
   });
 
   it('shrinks the title only once the author is gone', () => {
-    const fit = fitSpineTitle({ ...base, title: 'The Picture of Dorian Gray', author: 'Oscar Wilde' });
+    const fit = fitSpineTitle({ ...base, width: 20, title: 'The Picture of Dorian Gray', author: 'Oscar Wilde' });
     expect(fit.showAuthor).toBe(false);
+    expect(fit.lines).toHaveLength(1);
     expect(fit.titleSize).toBeLessThan(13);
     expect(fit.titleSize).toBeGreaterThanOrEqual(8);
     expect(fit.truncated).toBe(false);
@@ -69,7 +72,7 @@ describe('fitSpineTitle', () => {
 
   it('stops at the 8 px floor and reports truncation', () => {
     const fit = fitSpineTitle({ ...base, title: 'A'.repeat(80), author: 'Someone' });
-    expect(fit).toEqual({ titleSize: 8, authorSize: 8, showAuthor: false, truncated: true });
+    expect(fit).toEqual({ titleSize: 8, authorSize: 8, showAuthor: false, lines: ['A'.repeat(80)], truncated: true });
   });
 
   it('uses the wider caps factor for bold and band', () => {
@@ -78,6 +81,47 @@ describe('fitSpineTitle', () => {
     const caps = fitSpineTitle({ ...base, style: 'bold', height: 200, title, author: 'Mary Shelley' });
     expect(serif.showAuthor).toBe(true);
     expect(caps.showAuthor).toBe(false);
+  });
+
+  describe('on a wide spine', () => {
+    it('wraps a long title onto two lines instead of cutting it', () => {
+      const fit = fitSpineTitle({ style: 'band', width: 51, height: 180, title: 'The Brothers Karamazov', author: 'Fyodor Dostoevsky' });
+      expect(fit).toEqual({
+        titleSize: 11,
+        authorSize: 8.5,
+        showAuthor: false,
+        lines: ['The Brothers', 'Karamazov'],
+        truncated: false,
+      });
+    });
+
+    it('wraps when two lines keep the title larger than one shrunk line', () => {
+      const fit = fitSpineTitle({ ...base, title: 'The Picture of Dorian Gray', author: 'Oscar Wilde' });
+      expect(fit.lines).toHaveLength(2);
+      expect(fit.titleSize).toBe(10);
+    });
+
+    it('still drops the author first and keeps a title that fits on one line', () => {
+      const fit = fitSpineTitle({ ...base, width: 51, title: 'Middlemarch', author: 'George Eliot' });
+      expect(fit.lines).toEqual(['Middlemarch']);
+      expect(fit.titleSize).toBe(13);
+    });
+
+    it('never wraps a spine too narrow for two 8 px lines', () => {
+      const fit = fitSpineTitle({ ...base, width: 24, title: 'The Brothers Karamazov', author: '' });
+      expect(fit.lines).toHaveLength(1);
+    });
+  });
+});
+
+describe('splitTitle', () => {
+  it('splits where the longer line is shortest', () => {
+    expect(splitTitle('The Brothers Karamazov')).toEqual(['The Brothers', 'Karamazov']);
+    expect(splitTitle('Twenty Thousand Leagues Under the Seas')).toEqual(['Twenty Thousand', 'Leagues Under the Seas']);
+  });
+
+  it('returns null for a single word', () => {
+    expect(splitTitle('Middlemarch')).toBeNull();
   });
 });
 

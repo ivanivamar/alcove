@@ -29,7 +29,11 @@
     }
 
     <span class="text" [class.caps]="caps()" [style.top.px]="textStart()">
-      <span class="title" [style.font-size.px]="fit().titleSize">{{ book().title }}</span>
+      <span class="title" [style.font-size.px]="fit().titleSize">
+        @for (line of fit().lines; track $index) {
+          <span class="line">{{ line }}</span>
+        }
+      </span>
       @if (fit().showAuthor) {
         <span class="author" [style.font-size.px]="fit().authorSize">{{ book().author }}</span>
       }

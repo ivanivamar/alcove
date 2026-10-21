@@ -76,8 +76,8 @@
 
 /* Title and author run top to bottom; the author sits at the foot end. */
 .text {
-  left: 0;
-  right: 0;
+  left: var(--alc-spine-pad-side);
+  right: var(--alc-spine-pad-side);
   bottom: var(--alc-spine-pad-foot);
   display: flex;
   align-items: center;
@@ -86,7 +86,7 @@
   writing-mode: vertical-rl;
   white-space: nowrap;
   font-family: var(--alc-font-display);
-  line-height: 1;
+  line-height: var(--alc-spine-line-height);
 }
 .caps {
   font-family: var(--alc-font-ui);
@@ -94,8 +94,13 @@
   text-transform: uppercase;
   letter-spacing: var(--alc-spine-tracking-caps);
 }
+/* Lines stack right to left, like any vertical-rl text; each one ellipsizes on its own. */
 .title {
+  display: block;
   min-inline-size: 0;
+}
+.line {
+  display: block;
   overflow: hidden;
   text-overflow: ellipsis;
 }

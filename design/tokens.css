@@ -235,6 +235,8 @@
   --alc-spine-pad-head: 10px;      /* clear space above the title */
   --alc-spine-pad-foot: 22px;      /* room for the state mark */
   --alc-spine-gap: 8px;            /* between title and author */
+  --alc-spine-pad-side: 3px;       /* either side of a two-line title */
+  --alc-spine-line-height: 1.15;   /* title lines; two fit when width ≥ 2 × size × 1.15 + 6 */
   --alc-spine-head-cloth: 16px;    /* extra head room for the foil rules */
   --alc-spine-head-series: 24px;   /* extra head room for the numeral */
   --alc-spine-band-share: 20%;     /* band style: colour band over the top fifth */
