@@ -1,0 +1,106 @@
+/* The bay. Spines, boards and the bookend are placed from its bottom edge by layoutShelf(),
+   so a bay stretched by a taller neighbour keeps its books on the bottom board. */
+:host {
+  --pad: var(--alc-shelf-pad);
+  --bookend-height: var(--alc-bookend-height);
+  --slot-height: var(--alc-shelf-slot-height);
+
+  position: relative;
+  display: block;
+  min-width: 0;
+  background: var(--alc-bay-lamp), var(--alc-bay);
+  box-shadow: var(--alc-bay-inset);
+}
+:host(.compact) {
+  --pad: calc(var(--alc-shelf-pad) * var(--alc-shelf-density-compact));
+  --bookend-height: calc(var(--alc-bookend-height) * var(--alc-spine-density-compact));
+  --slot-height: calc(var(--alc-shelf-slot-height) * var(--alc-spine-density-compact));
+}
+
+/* Label: a link to the collection, with a 44 px hit area that doesn't move the layout. */
+.label {
+  margin: 0;
+  padding: var(--pad) var(--pad) 0;
+  font: var(--alc-type-shelf);
+}
+.label a {
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--alc-space-2);
+  max-width: 100%;
+  padding-block: calc((var(--alc-touch) - 1lh) / 2);
+  margin-block: calc((1lh - var(--alc-touch)) / 2);
+  color: var(--alc-ink);
+  text-decoration: none;
+}
+.label a:hover .name {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.count {
+  flex: none;
+  color: var(--alc-ink-muted);
+  font: var(--alc-type-label);
+}
+
+.books {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.books li {
+  position: absolute;
+}
+
+.board {
+  position: absolute;
+  inset-inline: 0;
+  height: var(--alc-board);
+  background: linear-gradient(
+    var(--alc-wood-top) 0 var(--alc-board-top),
+    var(--alc-wood) var(--alc-board-top) calc(var(--alc-board-top) + var(--alc-board-front)),
+    var(--alc-wood-under) calc(var(--alc-board) - var(--alc-board-under)) 100%
+  );
+  box-shadow: var(--alc-board-shadow);
+}
+
+.bookend {
+  position: absolute;
+  width: var(--alc-bookend-width);
+  height: var(--bookend-height);
+  border-radius: 1px 1px 0 0;
+  background: var(--alc-bookend-light), var(--alc-bookend);
+}
+
+/* Empty bay: a dashed slot where a book would stand, the bookend, one line of text. */
+.empty {
+  position: absolute;
+  inset-inline: var(--pad);
+  bottom: var(--alc-board);
+  display: flex;
+  align-items: flex-end;
+  gap: var(--alc-shelf-spine-gap);
+}
+.slot {
+  flex: none;
+  width: var(--alc-shelf-slot-width);
+  height: var(--slot-height);
+  border: 1px dashed var(--alc-hairline-strong);
+  border-bottom: 0;
+  border-radius: var(--alc-radius-book) var(--alc-radius-book) 0 0;
+}
+.empty .bookend {
+  position: static;
+  flex: none;
+}
+.empty-text {
+  align-self: center;
+  margin: 0 0 0 var(--pad);
+  color: var(--alc-ink-muted);
+}

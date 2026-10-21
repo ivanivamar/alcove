@@ -1,0 +1,36 @@
+/* The cabinet: wood side panels and a top board. The wood shows between bays as the dividers. */
+:host {
+  display: block;
+  padding-inline: var(--alc-cabinet-side);
+  background: var(--alc-wood);
+  /* Lamp upper left: the left panel's face is lit, the right one is in shade. */
+  box-shadow:
+    inset 1px 0 0 var(--alc-wood-top),
+    inset -1px 0 0 var(--alc-wood-under);
+}
+
+.top {
+  height: var(--alc-cabinet-top);
+  margin-inline: calc(-1 * var(--alc-cabinet-side));
+  background: linear-gradient(
+    var(--alc-wood-top) 0 var(--alc-board-top),
+    var(--alc-wood) var(--alc-board-top) calc(100% - var(--alc-board-under)),
+    var(--alc-wood-under) calc(100% - var(--alc-board-under)) 100%
+  );
+}
+
+.row {
+  display: grid;
+  grid-template-columns: var(--alc-bookcase-columns-phone);
+  column-gap: var(--alc-bay-divider);
+}
+@media (min-width: 600px) {
+  .row {
+    grid-template-columns: var(--alc-bookcase-columns-tablet);
+  }
+}
+@media (min-width: 1024px) {
+  .row {
+    grid-template-columns: var(--alc-bookcase-columns-desktop);
+  }
+}

@@ -1,0 +1,19 @@
+<div class="top" aria-hidden="true"></div>
+@if (width()) {
+  <cdk-virtual-scroll-viewport scrollWindow class="viewport">
+    <div
+      *cdkVirtualFor="let row of rows(); trackBy: trackRow"
+      class="row"
+      [style.height.px]="row.height"
+    >
+      @for (bay of row.bays; track bay.shelf.id) {
+        <alc-shelf-row
+          [shelf]="bay.shelf"
+          [books]="bay.books"
+          [width]="bay.width"
+          [density]="density()"
+        />
+      }
+    </div>
+  </cdk-virtual-scroll-viewport>
+}
