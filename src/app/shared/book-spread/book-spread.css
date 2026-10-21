@@ -148,8 +148,33 @@
   background: none;
   cursor: pointer;
 }
+/* No ring round a third of the page. Keyboard focus shows a chevron at the page edge instead,
+   pointing the way the button turns. */
 .turn:focus-visible {
-  outline-offset: calc(var(--alc-space-1) * -1);
+  outline: none;
+}
+.turn::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: var(--alc-turn-hint);
+  height: var(--alc-turn-hint);
+  border: solid var(--alc-page-accent);
+  border-width: 0 0 var(--alc-turn-hint-weight) var(--alc-turn-hint-weight);
+  translate: 0 -50%;
+  opacity: 0;
+  transition: opacity var(--alc-dur-fade) var(--alc-ease);
+}
+.turn:focus-visible::after {
+  opacity: 1;
+}
+.previous::after {
+  left: var(--alc-space-2);
+  rotate: 45deg;
+}
+.next::after {
+  right: var(--alc-space-2);
+  rotate: -135deg;
 }
 .turn[aria-disabled] {
   cursor: default;
