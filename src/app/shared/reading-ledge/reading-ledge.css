@@ -1,0 +1,151 @@
+/* A bay-coloured ledge with the lamp from the upper left, like the bookcase bays, and one board
+   the covers stand on. Compact density scales the padding like the shelves (spec §2). */
+:host {
+  --pad: var(--alc-shelf-pad);
+
+  display: block;
+}
+:host([hidden]) {
+  display: none;
+}
+:host(.compact) {
+  --pad: calc(var(--alc-shelf-pad) * var(--alc-shelf-density-compact));
+}
+
+.ledge {
+  background: var(--alc-bay-lamp), var(--alc-bay);
+}
+
+.heading {
+  margin: 0;
+  padding: var(--pad) var(--pad) 0;
+  color: var(--alc-ink);
+  font: var(--alc-type-shelf);
+}
+
+/* Covers scroll sideways when they don't fit, snapping to a cover. The padding inside the
+   scroller leaves room for the focus ring, which the overflow would otherwise clip. */
+.scroller {
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: var(--pad);
+}
+
+/* The wood scrollbar comes from styles.css; here its track is inset to line up with the covers. */
+.scroller::-webkit-scrollbar-track {
+  margin-inline: var(--pad);
+}
+.track {
+  position: relative;
+  width: max-content;
+  min-width: 100%;
+  padding: var(--pad);
+}
+
+/* Bottom-aligned, so every cover stands on the board whatever the height of its meta. */
+.books {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--alc-ledge-gap);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.book {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  scroll-snap-align: start;
+}
+
+/* One link per book: the cover and, from tablet up, its meta. It ends where the board begins. */
+.link {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--alc-space-3);
+  margin-bottom: var(--alc-board);
+  color: inherit;
+  text-decoration: none;
+}
+
+.board {
+  position: absolute;
+  inset-inline: 0;
+  top: calc(var(--pad) + var(--cover-height));
+  height: var(--alc-board);
+  background: var(--alc-board-fill);
+  box-shadow: var(--alc-board-shadow);
+}
+
+/* Phone: only the percentage, under the board. */
+.meta {
+  display: none;
+}
+.pct {
+  margin-top: var(--alc-space-2);
+  color: var(--alc-ink-muted);
+  font: var(--alc-type-label);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Tablet and desktop: the meta beside each cover, standing on the board with it. */
+@media (min-width: 600px) {
+  .book {
+    align-items: stretch;
+  }
+  .meta {
+    display: flex;
+    flex-direction: column;
+    gap: var(--alc-space-1);
+    width: var(--alc-ledge-meta-width);
+  }
+  .pct {
+    display: none;
+  }
+  /* The meta can be taller than a small cover, so the board follows the links' foot instead. */
+  .board {
+    top: auto;
+    bottom: var(--pad);
+  }
+}
+
+.title {
+  display: -webkit-box;
+  overflow: hidden;
+  color: var(--alc-ink);
+  font: var(--alc-type-ledge-title);
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+.author {
+  overflow: hidden;
+  color: var(--alc-ink-muted);
+  font: var(--alc-type-label);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.bar {
+  height: var(--alc-progress-bar);
+  margin-top: var(--alc-space-1);
+  background: var(--alc-hairline-strong);
+}
+.bar .read {
+  display: block;
+  height: 100%;
+  background: var(--alc-lamp);
+  transform-origin: left;
+}
+.stat {
+  color: var(--alc-ink-muted);
+  font: var(--alc-type-label);
+  font-variant-numeric: tabular-nums;
+}
+.continue {
+  color: var(--alc-accent);
+  font: var(--alc-type-label);
+}
+.link:hover .continue {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}

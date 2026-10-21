@@ -1,0 +1,100 @@
+/* The cover. Two shadow layers only (--alc-elev-1); the 2 px joint shade on the left edge is a
+   gradient above the image, not a third shadow. */
+:host {
+  position: relative;
+  display: block;
+  flex: none;
+  aspect-ratio: var(--alc-cover-ratio);
+  overflow: hidden;
+  border-radius: var(--alc-radius-book);
+  background: var(--alc-raised);
+  box-shadow: var(--alc-elev-1);
+}
+:host::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--alc-cover-shade);
+  pointer-events: none;
+}
+
+/* Until the image loads: its dominant colour, blurred. Bleeds past the edge so the blur
+   doesn't fade out at the sides. */
+.placeholder {
+  position: absolute;
+  inset: calc(-1 * var(--alc-cover-placeholder-blur));
+  background-image: var(--alc-cover-placeholder);
+  filter: blur(var(--alc-cover-placeholder-blur));
+}
+img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity var(--alc-dur-fade) var(--alc-ease);
+}
+:host(.loaded) img {
+  opacity: 1;
+}
+
+/* No cover in the EPUB: mark, title and author on the raised surface, in a 1 px frame. */
+.fallback {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  color: var(--alc-ink);
+}
+.frame {
+  position: absolute;
+  inset: var(--alc-cover-frame-inset);
+  border: 1px solid var(--alc-hairline-strong);
+}
+.mark {
+  color: var(--alc-lamp);
+}
+.title {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 0;
+  max-width: 100%;
+  overflow: hidden;
+  font-family: var(--alc-font-display);
+  line-height: var(--alc-cover-line-height);
+}
+.line {
+  white-space: nowrap;
+}
+.author {
+  max-width: 100%;
+  overflow: hidden;
+  color: var(--alc-ink-muted);
+  font-family: var(--alc-font-ui);
+  font-variant-caps: all-small-caps;
+  letter-spacing: var(--alc-tracking-caption);
+  line-height: var(--alc-cover-line-height);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Reading: 3 px amber along the bottom edge, over a dark track. */
+.progress {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  z-index: 1;
+  height: var(--alc-progress-bar);
+  background: var(--alc-progress-track);
+}
+.read {
+  display: block;
+  height: 100%;
+  background: var(--alc-lamp);
+  transform-origin: left;
+}

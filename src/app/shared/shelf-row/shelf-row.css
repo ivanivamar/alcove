@@ -62,11 +62,7 @@
   position: absolute;
   inset-inline: 0;
   height: var(--alc-board);
-  background: linear-gradient(
-    var(--alc-wood-top) 0 var(--alc-board-top),
-    var(--alc-wood) var(--alc-board-top) calc(var(--alc-board-top) + var(--alc-board-front)),
-    var(--alc-wood-under) calc(var(--alc-board) - var(--alc-board-under)) 100%
-  );
+  background: var(--alc-board-fill);
   box-shadow: var(--alc-board-shadow);
 }
 

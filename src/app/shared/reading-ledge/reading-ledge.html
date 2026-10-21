@@ -1,0 +1,28 @@
+<section class="ledge" aria-labelledby="alc-reading-ledge-heading">
+  <h2 class="heading" id="alc-reading-ledge-heading">Currently reading</h2>
+
+  <div class="scroller" [style.--cover-height.px]="coverHeight()">
+    <div class="track">
+      <ul class="books">
+        @for (item of items(); track item.book.id) {
+          <li class="book">
+            <a class="link" [routerLink]="item.route" [attr.aria-label]="item.label">
+              <alc-cover aria-hidden="true" [book]="item.book" [width]="coverWidth()" />
+              <span class="meta" aria-hidden="true">
+                <span class="title">{{ item.book.title }}</span>
+                <span class="author">{{ item.book.author }}</span>
+                <span class="bar">
+                  <span class="read" [style.transform]="'scaleX(' + item.book.progress + ')'"></span>
+                </span>
+                <span class="stat">{{ item.pct }}% · {{ item.timeLeft }}</span>
+                <span class="continue">Continue</span>
+              </span>
+            </a>
+            <span class="pct" aria-hidden="true">{{ item.pct }}%</span>
+          </li>
+        }
+      </ul>
+      <span class="board" aria-hidden="true"></span>
+    </div>
+  </div>
+</section>

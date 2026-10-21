@@ -1,0 +1,32 @@
+@if (image(); as image) {
+  <span class="placeholder" [style.background-color]="image.color"></span>
+  <img
+    [src]="image.src"
+    alt=""
+    loading="lazy"
+    decoding="async"
+    (load)="loaded.set(true)"
+    (error)="failed.set(true)"
+  />
+} @else {
+  <span
+    class="fallback"
+    [style.padding.px]="fallback().pad"
+    [style.gap.px]="fallback().gap"
+  >
+    <span class="frame"></span>
+    <alc-icon class="mark" name="arch" [size]="fallback().mark" />
+    <span class="title" [style.font-size.px]="fallback().titleSize">
+      @for (line of fallback().lines; track $index) {
+        <span class="line">{{ line }}</span>
+      }
+    </span>
+    <span class="author" [style.font-size.px]="fallback().authorSize">{{ book().author }}</span>
+  </span>
+}
+
+@if (reading()) {
+  <span class="progress">
+    <span class="read" [style.transform]="'scaleX(' + book().progress + ')'"></span>
+  </span>
+}

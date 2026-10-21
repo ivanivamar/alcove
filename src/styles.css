@@ -38,6 +38,33 @@ a {
   outline-offset: 3px;
 }
 
+/* Scrollbars, everywhere: a thin wood thumb on a clear track. Chrome and Safari take the
+   pseudo-elements (no arrow buttons, a rounded thumb). In Chrome the standard properties would
+   override them and bring the arrows back on Windows, so those are for Firefox only. */
+::-webkit-scrollbar {
+  width: var(--alc-scrollbar-size);
+  height: var(--alc-scrollbar-size);
+}
+::-webkit-scrollbar-track,
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  border-radius: var(--alc-scrollbar-size);
+  background: var(--alc-scrollbar-thumb);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--alc-scrollbar-thumb-hover);
+}
+@supports not selector(::-webkit-scrollbar) {
+  * {
+    scrollbar-width: thin;
+  }
+  :root {
+    scrollbar-color: var(--alc-scrollbar-thumb) transparent;   /* inherited by every scroller */
+  }
+}
+
 .alc-visually-hidden {
   position: absolute !important;
   width: 1px;

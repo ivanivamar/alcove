@@ -43,6 +43,8 @@
   --alc-wood-top: #80593F;         /* lit top face of a board */
   --alc-wood-under: #533826;       /* shadowed underside */
   --alc-bookend: #4A4540;
+  --alc-scrollbar-thumb: #94694A;        /* wood, ≥ 3.2:1 on every surface (raised is lowest) */
+  --alc-scrollbar-thumb-hover: #A87D58;  /* ≥ 4.2:1 */
 }
 
 /* ---------------------------------------------------------------- */
@@ -77,6 +79,8 @@
   --alc-wood-top: #DABF94;
   --alc-wood-under: #B08F60;
   --alc-bookend: #9A948B;
+  --alc-scrollbar-thumb: #9A7B4F;        /* ≥ 3.2:1 on every surface (bay is lowest) */
+  --alc-scrollbar-thumb-hover: #7E6038;  /* ≥ 4.8:1 */
 }
 
 @media (prefers-color-scheme: light) {
@@ -89,6 +93,7 @@
     --alc-lamp-soft: rgba(166, 75, 48, .07); --alc-lamp-line: rgba(166, 75, 48, .35); --alc-danger: #A33A2A;
     --alc-glow: rgba(255, 252, 245, .9); --alc-scrim: rgba(42, 38, 34, .38);
     --alc-wood: #C9A878; --alc-wood-top: #DABF94; --alc-wood-under: #B08F60; --alc-bookend: #9A948B;
+    --alc-scrollbar-thumb: #9A7B4F; --alc-scrollbar-thumb-hover: #7E6038;
   }
 }
 
@@ -121,6 +126,7 @@
   --alc-type-caption: 600 11px/16px var(--alc-font-ui);           /* uppercase, +0.12em */
   --alc-type-read: 400 19px/1.6 var(--alc-font-read);             /* 14–28 px, user adjustable */
   --alc-type-chapter: italic 400 30px/38px var(--alc-font-display);
+  --alc-type-ledge-title: 500 17px/22px var(--alc-font-display);  /* book names beside ledge covers */
   --alc-tracking-caption: 0.12em;
   --alc-tracking-running-head: 0.22em;
   --alc-measure: 66ch;                                            /* 60–75 characters */
@@ -143,6 +149,7 @@
   --alc-rail-width: 72px;
   --alc-bottom-bar-height: 64px;  /* plus env(safe-area-inset-bottom) */
   --alc-cloth-board: 14px;        /* boards around the reader pages (7px on phone) */
+  --alc-scrollbar-size: 8px;      /* every scrollbar: a wood thumb on a clear track ("thin" in Firefox) */
 
   /* One light source, upper left: shadows fall down and to the right. */
   --alc-elev-0: 0 0 0 1px var(--alc-hairline);
@@ -282,6 +289,12 @@
   --alc-board-top: 3px;
   --alc-board-front: 9px;
   --alc-board-under: 4px;
+  /* The board's faces, top to bottom. Shared by the bookcase rows and the reading ledge. */
+  --alc-board-fill: linear-gradient(
+    var(--alc-wood-top) 0 var(--alc-board-top),
+    var(--alc-wood) var(--alc-board-top) calc(var(--alc-board-top) + var(--alc-board-front)),
+    var(--alc-wood-under) calc(var(--alc-board) - var(--alc-board-under)) 100%
+  );
 
   --alc-bookend-width: 5px;
   --alc-bookend-height: 112px;     /* × 0.85 in compact, like the spines */
@@ -300,4 +313,49 @@
   :root[data-theme="system"] {
     --alc-bay-inset: inset 0 10px 12px -10px rgba(80, 55, 30, .3);
   }
+}
+
+/* ---------------------------------------------------------------- */
+/* Covers (alc-cover, spec §4.2)                                     */
+/* Mirrored in tokens.json "cover", which the title fit reads.       */
+/* ---------------------------------------------------------------- */
+:root {
+  --alc-cover-ratio: 2 / 3;
+  /* The joint: a 2 px shade inside the left edge. A gradient, not a shadow, so a cover keeps
+     to two shadow layers (--alc-elev-1). */
+  --alc-cover-shade: linear-gradient(90deg, rgba(0, 0, 0, .32) 0, rgba(0, 0, 0, .12) 1px, transparent 2px);
+  /* Until the image loads: the dominant colour, lit from the upper left, then blurred. */
+  --alc-cover-placeholder:
+    radial-gradient(120% 80% at 15% 10%, rgba(255, 255, 255, .20), transparent 60%),
+    linear-gradient(transparent 45%, rgba(0, 0, 0, .22));
+  --alc-cover-placeholder-blur: 12px;
+  --alc-cover-frame-inset: 4px;    /* fallback: the 1 px frame sits this far inside the edge */
+
+  /* Fallback title fitting. Ratios are × the cover width. */
+  --alc-cover-pad: 0.1;
+  --alc-cover-mark: 0.22;          /* the arch mark */
+  --alc-cover-type-max: 0.17;      /* title size cap */
+  --alc-cover-type-min: 8px;
+  --alc-cover-author: 0.09;        /* author size, never below the minimum */
+  --alc-cover-line-height: 1.15;
+  --alc-cover-char-width: 0.55;    /* Fraunces: average glyph width × size */
+
+  /* Reading progress on covers and in the ledge meta. */
+  --alc-progress-bar: 3px;
+  --alc-progress-track: rgba(0, 0, 0, .38);
+}
+
+/* ---------------------------------------------------------------- */
+/* Currently reading ledge (alc-reading-ledge, spec §4.4)            */
+/* Mirrored in tokens.json "ledge" and "reading".                    */
+/* ---------------------------------------------------------------- */
+:root {
+  --alc-ledge-cover-phone: 80px;
+  --alc-ledge-cover-tablet: 88px;    /* tablet frames aren't drawn (spec §9): between the two */
+  --alc-ledge-cover-desktop: 104px;  /* compact density multiplies all three by 0.85 */
+  --alc-ledge-meta-width: 176px;     /* title, author, progress and Continue beside a cover */
+  --alc-ledge-gap: 24px;             /* between books on the board */
+
+  /* "Time left" assumes this reading speed until the reader measures the user's own. */
+  --alc-reading-pages-per-minute: 1.3;
 }
