@@ -1,0 +1,12 @@
+<nav aria-label="Main">
+  <ul class="bar">
+    @for (item of items; track item.path) {
+      <li>
+        <a class="item" [routerLink]="item.path" routerLinkActive="is-active" ariaCurrentWhenActive="page">
+          <alc-icon [name]="item.icon" />
+          <span class="label">{{ item.label }}</span>
+        </a>
+      </li>
+    }
+  </ul>
+</nav>

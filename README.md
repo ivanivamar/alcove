@@ -4,7 +4,16 @@ A book library and EPUB reader that looks and feels like a built-in bookcase. Yo
 
 Alcove is one shared UI built in **Angular** as a **PWA**, and shipped to **Android** through **Capacitor**.
 
-> **Status:** design phase. The build spec v1.0 and the design tokens are done; there is no application code yet.
+> **Status:** early build. The design spec and tokens are done; the Angular PWA workspace and app shell (side rail, bottom bar, placeholder screens) are in place.
+
+## Running
+
+```bash
+npm install
+npm start          # dev server at http://localhost:4200
+npm test           # unit tests (Vitest)
+npm run build      # production build with the service worker
+```
 
 ## Design principles
 
@@ -60,6 +69,11 @@ Gutters are 16 / 24 / 40 px, and all spacing sits on an 8 px grid.
 ## Repository layout
 
 ```
+src/app/
+  core/         App-wide services (theme)
+  shell/        alc-side-rail, alc-bottom-bar, nav items
+  shared/       Reusable components (alc-icon)
+  features/     One folder per screen (library, …)
 design/
   SPEC.md       Build spec v1.0: components, motion, screens, accessibility, offline
   tokens.css    Design tokens as CSS custom properties (source of truth for the build)

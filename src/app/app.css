@@ -1,0 +1,37 @@
+/* Phone ≤ 599 px: bottom bar. Tablet 600–1023 px and desktop ≥ 1024 px: side rail. */
+:host {
+  display: grid;
+  grid-template-columns: 1fr;
+  min-height: 100dvh;
+}
+
+.rail {
+  display: none;
+}
+
+.main {
+  min-width: 0;
+  padding: var(--alc-space-4) var(--alc-gutter-phone);
+  padding-bottom: calc(var(--alc-bottom-bar-height) + env(safe-area-inset-bottom) + var(--alc-space-4));
+}
+
+@media (min-width: 600px) {
+  :host {
+    grid-template-columns: var(--alc-rail-width) 1fr;
+  }
+  .rail {
+    display: block;
+  }
+  .bottom-bar {
+    display: none;
+  }
+  .main {
+    padding: var(--alc-space-5) var(--alc-gutter-tablet);
+  }
+}
+
+@media (min-width: 1024px) {
+  .main {
+    padding-inline: var(--alc-gutter-desktop);
+  }
+}
