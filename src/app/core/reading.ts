@@ -9,11 +9,41 @@ const PAGES_PER_MINUTE = tokens.reading.pagesPerMinute;
  * minutes, since nobody plans their evening to the minute.
  */
 export function minutesLeft(pages: number, progress: number): number {
-  const pagesLeft = pages * (1 - Math.min(1, Math.max(0, progress)));
-  if (pagesLeft <= 0) return 0;
+  return minutesFor(pages * (1 - Math.min(1, Math.max(0, progress))));
+}
+
+function minutesFor(pagesLeft: number): number {
+  if (!(pagesLeft > 0)) return 0;
   const minutes = pagesLeft / PAGES_PER_MINUTE;
   if (minutes < 60) return Math.max(1, Math.round(minutes));
   return Math.round(minutes / 10) * 10;
+}
+
+/** Where the reader is in the text as laid out: pages from 0, and where each chapter starts. */
+export interface LaidOutPosition {
+  readonly page: number;
+  readonly pageCount: number;
+  readonly chapterStarts: readonly number[];
+}
+
+/**
+ * Minutes left in the chapter on screen, rounded like `minutesLeft`. Laid-out pages change size
+ * with the window and the type, so the pages left are taken as a share of the book and counted
+ * in the book's own pages, at the same speed as the time left in the book.
+ */
+export function minutesLeftInChapter(
+  pages: number,
+  { page, pageCount, chapterStarts }: LaidOutPosition,
+): number {
+  if (pageCount < 1) return 0;
+  const at = Math.min(pageCount - 1, Math.max(0, page));
+  const end = chapterStarts.find((start) => start > at) ?? pageCount;
+  return minutesFor(((end - at) / pageCount) * pages);
+}
+
+/** "12 min left in chapter". */
+export function timeLeftInChapter(book: Pick<Book, 'pages'>, position: LaidOutPosition): string {
+  return `${formatTimeLeft(minutesLeftInChapter(book.pages, position))} in chapter`;
 }
 
 /** "3 h 20 min left", "3 h left" or "45 min left". */

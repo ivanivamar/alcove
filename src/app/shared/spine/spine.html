@@ -1,10 +1,20 @@
-<button
-  type="button"
-  class="spine"
-  [attr.aria-label]="label()"
-  [style.width.px]="width()"
-  [style.height.px]="height()"
->
+@if (decorative()) {
+  <span class="spine" aria-hidden="true" [style.width.px]="width()" [style.height.px]="height()">
+    <ng-container [ngTemplateOutlet]="body" />
+  </span>
+} @else {
+  <button
+    type="button"
+    class="spine"
+    [attr.aria-label]="label()"
+    [style.width.px]="width()"
+    [style.height.px]="height()"
+  >
+    <ng-container [ngTemplateOutlet]="body" />
+  </button>
+}
+
+<ng-template #body>
   <span
     class="body"
     aria-hidden="true"
@@ -53,7 +63,13 @@
       @case ('downloading') {
         <svg class="mark icon ring" viewBox="0 0 10 10">
           <circle class="track" cx="5" cy="5" r="4" />
-          <circle cx="5" cy="5" r="4" pathLength="1" [attr.stroke-dasharray]="downloadProgress() + ' 1'" />
+          <circle
+            cx="5"
+            cy="5"
+            r="4"
+            pathLength="1"
+            [attr.stroke-dasharray]="downloadProgress() + ' 1'"
+          />
         </svg>
       }
       @case ('not-on-device') {
@@ -63,4 +79,4 @@
       }
     }
   </span>
-</button>
+</ng-template>

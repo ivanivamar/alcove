@@ -1,3 +1,4 @@
+import { NgTemplateOutlet } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 import tokens from '../../../../design/tokens.json';
 import { Book, SpineColor, SpineStyle } from '../../core/book';
@@ -17,6 +18,7 @@ const LIGHT_CLOTHS: readonly string[] = tokens.spine.lightCloths;
 @Component({
   selector: 'alc-spine',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [NgTemplateOutlet],
   templateUrl: './spine.html',
   styleUrl: './spine.css',
 })
@@ -28,6 +30,8 @@ export class Spine {
   readonly color = input<SpineColor>();
   readonly scale = input(1);
   readonly density = input<SpineDensity>('comfortable');
+  /** Just the picture, hidden from assistive tech: for a spine inside another control. */
+  readonly decorative = input(false);
 
   protected readonly resolvedStyle = computed(() => this.style() ?? this.book().spine.style);
   protected readonly caps = computed(() => isCapsStyle(this.resolvedStyle()));

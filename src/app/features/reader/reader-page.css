@@ -1,0 +1,168 @@
+/* The room: the controls bar, then the open book standing on its board. */
+:host {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+  padding: var(--alc-space-2) var(--alc-gutter-phone) var(--alc-space-3);
+}
+
+/* Hidden at rest, faded and not clickable, but still in the tab order: tabbing in shows it. */
+.controls {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: var(--alc-space-2);
+  flex: none;
+  margin-bottom: var(--alc-space-2);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--alc-dur-fade) var(--alc-ease);
+}
+.controls.shown {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--alc-touch);
+  border-radius: var(--alc-touch);
+  background: var(--alc-paper);
+  box-shadow: var(--alc-elev-0);
+  color: var(--alc-ink);
+  font: var(--alc-type-label);
+}
+.back {
+  justify-self: start;
+  gap: var(--alc-space-2);
+  min-width: 0;
+  max-width: 100%;
+  padding: 0 var(--alc-space-3) 0 var(--alc-space-2);
+  text-decoration: none;
+}
+.back-label {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.tools {
+  justify-self: end;
+}
+.tool {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: var(--alc-touch);
+  min-height: var(--alc-touch);
+  padding: 0 var(--alc-space-3);
+  border: 0;
+  border-radius: var(--alc-touch);
+  background: none;
+  cursor: pointer;
+}
+.tool:hover {
+  background: var(--alc-seg-on);
+}
+/* Contents is a word from tablet up, an icon on phone; its name is the word either way. */
+.contents alc-icon {
+  display: none;
+}
+
+.heading {
+  min-width: 0;
+  max-width: var(--alc-reader-title-max);
+  text-align: center;
+}
+.title,
+.author {
+  margin: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.title {
+  font: var(--alc-type-ledge-title);
+}
+.author {
+  color: var(--alc-ink-muted);
+  font: var(--alc-type-label);
+}
+
+/* As wide as the book, which sets its own width; the board overhangs it a little. */
+.shelf {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  width: fit-content;
+  max-width: 100%;
+  min-height: 0;
+  margin-inline: auto;
+}
+.book {
+  flex: 1;
+}
+.progress {
+  margin-inline: calc(var(--alc-space-2) * -1);
+}
+
+/* Phone: one floating paper bar over the top of the pages. */
+@media (max-width: 599px) {
+  .controls {
+    position: absolute;
+    z-index: var(--alc-z-controls);
+    top: var(--alc-space-2);
+    inset-inline: var(--alc-gutter-phone);
+    grid-template: 'back tools' auto 'heading heading' auto / 1fr auto;
+    row-gap: 0;
+    margin: 0;
+    padding: var(--alc-space-1);
+    border-radius: var(--alc-radius-panel);
+    background: var(--alc-paper);
+    box-shadow: var(--alc-elev-3);
+  }
+  .pill {
+    box-shadow: none;
+  }
+  .back {
+    grid-area: back;
+  }
+  .tools {
+    grid-area: tools;
+  }
+  .heading {
+    grid-area: heading;
+    justify-self: stretch;
+    max-width: none;
+    padding: 0 var(--alc-space-2) var(--alc-space-1);
+  }
+  .author {
+    display: none;
+  }
+  .tool {
+    padding: 0;
+  }
+  .contents alc-icon {
+    display: inline-flex;
+  }
+  .contents .tool-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}
+
+@media (min-width: 600px) {
+  :host {
+    padding: var(--alc-space-2) var(--alc-gutter-tablet) var(--alc-space-4);
+  }
+}
+@media (min-width: 1024px) {
+  :host {
+    padding-inline: var(--alc-gutter-desktop);
+  }
+}

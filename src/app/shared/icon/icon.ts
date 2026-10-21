@@ -11,6 +11,7 @@ const PATHS = {
     'M4 7h8 M18 7h2 M15 5a2 2 0 1 0 0 4a2 2 0 1 0 0-4z M4 17h2 M12 17h8 M9 15a2 2 0 1 0 0 4a2 2 0 1 0 0-4z',
   plus: 'M12 5v14 M5 12h14',
   back: 'M14.5 6L8.5 12l6 6',
+  contents: 'M9 6h11 M9 12h11 M9 18h11 M4.5 6h.01 M4.5 12h.01 M4.5 18h.01',
   /** The Alcove mark: an arched niche with one shelf. */
   arch: 'M5.5 20v-9.5a6.5 6.5 0 0 1 13 0V20 M3.5 20h17 M8.5 14.5h7',
 } as const;

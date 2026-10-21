@@ -1,0 +1,44 @@
+@if (book(); as book) {
+  <header class="controls" [class.shown]="controlsShown()" (focusin)="showControls()">
+    <a class="pill back" routerLink="/library">
+      <alc-icon name="back" [size]="20" />
+      <alc-spine [book]="book" [scale]="spineScale" [decorative]="true" />
+      <span class="back-label">{{ backLabel() }}</span>
+    </a>
+    <div class="heading">
+      <h1 class="title">{{ book.title }}</h1>
+      <p class="author">{{ book.author }}</p>
+    </div>
+    <div class="pill tools">
+      <!-- Their panels come with alc-popover and alc-sheet (spec §4.8). -->
+      <button type="button" class="tool contents">
+        <alc-icon name="contents" [size]="20" />
+        <span class="tool-label">Contents</span>
+      </button>
+      <button type="button" class="tool" aria-label="Aa, typography">Aa</button>
+    </div>
+  </header>
+
+  <div class="shelf">
+    <alc-book-spread
+      class="book"
+      [book]="book"
+      [content]="content()"
+      [paper]="paper()"
+      [(page)]="page"
+      (positionChange)="position.set($event)"
+      (centreTap)="toggleControls()"
+    />
+    <alc-shelf-progress
+      class="progress"
+      [page]="position()?.page ?? 0"
+      (pageChange)="page.set($event)"
+      [pageCount]="position()?.pageCount ?? 0"
+      [perView]="perView()"
+      [chapters]="chapters()"
+      [timeLeft]="chapterTimeLeft()"
+      [labelsShown]="controlsShown()"
+      (focusin)="showControls()"
+    />
+  </div>
+}

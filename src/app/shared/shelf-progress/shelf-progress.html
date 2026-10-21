@@ -1,0 +1,32 @@
+<span class="board" aria-hidden="true"></span>
+
+<div
+  class="slider"
+  role="slider"
+  tabindex="0"
+  aria-label="Reading position"
+  aria-valuemin="1"
+  [attr.aria-valuemax]="pageCount()"
+  [attr.aria-valuenow]="current() + 1"
+  [attr.aria-valuetext]="valueText()"
+  [attr.aria-disabled]="disabled() || null"
+  (keydown)="onKeydown($event)"
+  (pointerdown)="onPointerDown($event)"
+  (pointermove)="onPointerMove($event)"
+  (pointerup)="onPointerUp($event)"
+  (pointercancel)="onPointerUp($event)"
+>
+  <span class="rail" #rail>
+    <span class="read" [style.width.%]="read()"></span>
+    @for (at of notches(); track $index) {
+      <span class="notch" [style.left.%]="at"></span>
+    }
+    <span class="knob" [style.left.%]="read()"></span>
+  </span>
+</div>
+
+<p class="labels" [class.shown]="labelsShown()" [attr.aria-hidden]="!labelsShown() || null">
+  <span class="chapter">{{ chapter()?.name }}</span>
+  <span class="page">{{ pageLabel() }}</span>
+  <span class="time">{{ timeLeft() }}</span>
+</p>

@@ -1,0 +1,87 @@
+/* The board the open book rests on, with the slider along its front face. */
+:host {
+  position: relative;
+  display: block;
+}
+
+.board {
+  display: block;
+  height: var(--alc-board);
+  background: var(--alc-board-fill);
+  box-shadow: var(--alc-board-shadow);
+}
+
+/* A 44 px band centred on the front face. The rail sits half a knob (and its halo) in from
+   each end, so the knob never hangs off the board. */
+.slider {
+  --inset: calc(var(--alc-progress-knob) / 2 + var(--alc-progress-halo));
+
+  position: absolute;
+  inset-inline: 0;
+  top: calc(var(--alc-board-top) + var(--alc-board-front) / 2 - var(--alc-touch) / 2);
+  height: var(--alc-touch);
+  cursor: pointer;
+  touch-action: none;
+}
+.slider[aria-disabled] {
+  cursor: default;
+}
+.rail {
+  position: absolute;
+  inset-inline: var(--inset);
+  top: 50%;
+  height: var(--alc-progress-rule);
+  translate: 0 -50%;
+  background: var(--alc-progress-track);
+}
+.read {
+  position: absolute;
+  inset-block: 0;
+  left: 0;
+  background: var(--alc-lamp);
+}
+.notch {
+  position: absolute;
+  top: 50%;
+  width: var(--alc-progress-notch);
+  height: var(--alc-progress-notch-height);
+  translate: -50% -50%;
+  background: var(--alc-progress-track);
+}
+.knob {
+  position: absolute;
+  top: 50%;
+  width: var(--alc-progress-knob);
+  height: var(--alc-progress-knob);
+  translate: -50% -50%;
+  border-radius: 50%;
+  background: var(--alc-lamp);
+  box-shadow: 0 0 0 var(--alc-progress-halo) var(--alc-progress-halo-color);
+}
+
+/* Under the board, fading in with the reader controls. */
+.labels {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0 var(--alc-space-3);
+  margin: 0;
+  padding: var(--alc-space-2) var(--inset) 0;
+  color: var(--alc-ink-muted);
+  font: var(--alc-type-label);
+  opacity: 0;
+  transition: opacity var(--alc-dur-fade) var(--alc-ease);
+}
+.labels.shown {
+  opacity: 1;
+}
+.chapter {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  color: var(--alc-ink);
+  font: var(--alc-type-shelf);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}

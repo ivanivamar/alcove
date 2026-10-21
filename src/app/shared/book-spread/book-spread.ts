@@ -37,6 +37,7 @@ import { ALC_PAGINATOR, PageLayout, Paginator } from './paginator';
 const SPREAD = `(min-width: ${tokens.breakpoint.spread}px)`;
 const DESKTOP = `(min-width: ${tokens.breakpoint.desktop}px)`;
 const TABLET = `(min-width: ${tokens.breakpoint.tablet}px)`;
+const SWIPE = tokens.reader.swipe;
 
 type Screen = 'phone' | 'tablet' | 'desktop';
 
@@ -52,6 +53,19 @@ const TURN_KEYS: Readonly<Record<string, 1 | -1>> = {
 const OWNS_KEYS =
   'input, textarea, select, [contenteditable]:not([contenteditable="false"]), [role="slider"]';
 
+interface Gesture {
+  readonly id: number;
+  readonly touch: boolean;
+  readonly x: number;
+  readonly y: number;
+  /** Which way it went once past the slop; null while it could still be a tap. */
+  axis: 'x' | 'y' | null;
+  /** How far the pages follow the finger. */
+  offset: number;
+  /** Text was selected when it began, so the click only clears the selection. */
+  readonly selecting: boolean;
+}
+
 export interface ReadingPosition {
   /** The first page on screen, from 0. */
   readonly page: number;
@@ -65,9 +79,9 @@ export interface ReadingPosition {
  * stacks, and the text laid out into pages with running heads and folios. Two pages side by side
  * from --alc-bp-spread, one below it.
  *
- * Page turns: the left and right thirds of the pages are buttons, plus the arrow keys and Page
- * Up/Down. The middle third is left free for the reader controls, and nothing here stops a
- * pointer from swiping.
+ * Page turns: the left and right thirds of the pages are buttons, plus the arrow keys, Page
+ * Up/Down and, on touch, a sideways swipe that follows the finger. A tap or click in the middle
+ * third is reported as `centreTap`, for the reader controls.
  */
 @Component({
   selector: 'alc-book-spread',
@@ -95,6 +109,11 @@ export class BookSpread {
   readonly page = model<number | null>(null);
   /** Every change of position, including the first, for the parent to save. */
   readonly positionChange = output<ReadingPosition>();
+  /**
+   * A tap or click in the middle third of the pages, for the reader controls. Not a swipe, a
+   * drag, or a click that selects text or clears a selection.
+   */
+  readonly centreTap = output<void>();
 
   private readonly document = inject(DOCUMENT);
   private readonly paginatorFactory = inject(ALC_PAGINATOR);
@@ -112,18 +131,27 @@ export class BookSpread {
   private anchor: number | null = null;
   /** The page as of the last layout or turn; a different `page()` means the parent moved it. */
   private settled: number | null = null;
+  /** The pointer on the pages, from down to up. */
+  private gesture: Gesture | null = null;
+  /** Set once a gesture moves too far to be a tap, so the click after it does nothing. */
+  private swallowClick = false;
+  /** The last gesture began with text selected, so its click only clears the selection. */
+  private clearsSelection = false;
 
   private readonly matched = toSignal(
     this.breakpoints.observe([TABLET, DESKTOP, SPREAD]).pipe(map(() => this.currentScreen())),
     { initialValue: this.currentScreen() },
   );
   protected readonly screen = computed(() => this.matched().screen);
-  protected readonly perView = computed(() => (this.matched().spread ? 2 : 1));
+  /** Pages on screen at once: 2 in a spread, 1 below it. A position is a multiple of this. */
+  readonly perView = computed(() => (this.matched().spread ? 2 : 1));
 
   private readonly layout = signal<PageLayout | null>(null, {
     equal: (a, b) =>
       a?.pageCount === b?.pageCount && a?.chapterStarts.join() === b?.chapterStarts.join(),
   });
+  /** Where the text fell, for the progress slider. Null until the first layout. */
+  readonly pageLayout = this.layout.asReadonly();
   protected readonly pageCount = computed(() => this.layout()?.pageCount ?? 0);
 
   /** The first page on screen, always the start of a view. */
@@ -227,6 +255,84 @@ export class BookSpread {
     return this.turn(-1);
   }
 
+  /** Moves focus to the first line of text on screen. */
+  focusText(): void {
+    this.focusFirstLine(this.current());
+  }
+
+  /** A turn button. A click that ends a swipe started on it doesn't turn a second time. */
+  protected onTurnClick(event: MouseEvent, direction: 1 | -1): void {
+    if (this.swallowsClick(event)) return;
+    this.turn(direction);
+  }
+
+  /** Any other click on the pages: a tap in the middle third. */
+  protected onPagesClick(event: MouseEvent): void {
+    if ((event.target as Element | null)?.closest?.('button')) return;
+    const selecting = this.clearsSelection || !this.selectionCollapsed();
+    this.clearsSelection = false;
+    if (this.swallowsClick(event) || selecting) return;
+    this.centreTap.emit();
+  }
+
+  protected onPointerDown(event: PointerEvent): void {
+    if (!event.isPrimary) return;
+    this.swallowClick = false;
+    this.clearsSelection = false;
+    this.gesture = {
+      id: event.pointerId,
+      touch: event.pointerType === 'touch',
+      x: event.clientX,
+      y: event.clientY,
+      axis: null,
+      offset: 0,
+      selecting: !this.selectionCollapsed(),
+    };
+  }
+
+  /**
+   * Past --alc-swipe-slop a gesture is no longer a tap. Sideways on touch, the pages follow the
+   * finger, except toward a turn that can't happen; up and down is left to the browser.
+   */
+  protected onPointerMove(event: PointerEvent): void {
+    const gesture = this.gesture;
+    if (!gesture || event.pointerId !== gesture.id) return;
+    const dx = event.clientX - gesture.x;
+    const dy = event.clientY - gesture.y;
+    if (!gesture.axis) {
+      if (Math.max(Math.abs(dx), Math.abs(dy)) <= SWIPE.slop) return;
+      gesture.axis = Math.abs(dx) > Math.abs(dy) ? 'x' : 'y';
+      this.swallowClick = true;
+      // Keep the swipe even if the finger leaves the pages.
+      if (gesture.axis === 'x' && gesture.touch) {
+        this.pages().nativeElement.setPointerCapture?.(gesture.id);
+      }
+    }
+    if (gesture.axis !== 'x' || !gesture.touch) return;
+    gesture.offset = this.canTurn(dx < 0 ? 1 : -1) ? dx : 0;
+    if (!this.reducedMotion()) this.follow(gesture.offset);
+  }
+
+  protected onPointerUp(event: PointerEvent): void {
+    const gesture = this.gesture;
+    if (!gesture || event.pointerId !== gesture.id) return;
+    this.gesture = null;
+    this.clearsSelection = gesture.selecting;
+    if (gesture.axis !== 'x' || !gesture.touch) return;
+    const dx = event.clientX - gesture.x;
+    this.follow(0);
+    if (Math.abs(dx) < SWIPE.turn || !this.turn(dx < 0 ? 1 : -1)) this.settleBack(gesture.offset);
+  }
+
+  /** The browser took the gesture over, to scroll or zoom. */
+  protected onPointerCancel(event: PointerEvent): void {
+    const gesture = this.gesture;
+    if (!gesture || event.pointerId !== gesture.id) return;
+    this.gesture = null;
+    this.follow(0);
+    this.settleBack(gesture.offset);
+  }
+
   protected onKeydown(event: KeyboardEvent): void {
     const direction = TURN_KEYS[event.key];
     if (
@@ -319,8 +425,7 @@ export class BookSpread {
   /** A 200 ms fade with a 24 px slide in the direction of travel; a plain fade under reduced motion. */
   private animateTurn(direction: 1 | -1): void {
     const { pageTurn, reduced, ease } = tokens.motion;
-    const still =
-      this.document.defaultView?.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
+    const still = this.reducedMotion();
     const keyframes: Keyframe[] = still
       ? [{ opacity: 0 }, { opacity: 1 }]
       : [
@@ -328,11 +433,53 @@ export class BookSpread {
           { opacity: 1, translate: '0 0' },
         ];
     const timing = { duration: still ? reduced.crossfade : pageTurn.duration, easing: ease };
-    const moving = [
+    for (const el of this.moving()) el.animate?.(keyframes, timing);
+  }
+
+  /** A swipe too short to turn, or toward a turn that can't happen: the pages slide home. */
+  private settleBack(offset: number): void {
+    if (!offset || this.reducedMotion()) return;
+    const { pageTurn, ease } = tokens.motion;
+    const keyframes: Keyframe[] = [{ translate: `${offset}px 0` }, { translate: '0 0' }];
+    for (const el of this.moving())
+      el.animate?.(keyframes, { duration: pageTurn.duration, easing: ease });
+  }
+
+  /** Holds the text and page furniture `offset` px sideways, under the finger; 0 lets go. */
+  private follow(offset: number): void {
+    for (const el of this.moving()) el.style.translate = offset ? `${offset}px 0` : '';
+  }
+
+  /** What moves in a turn: the text and the running heads and folios. */
+  private moving(): HTMLElement[] {
+    return [
       this.flow().nativeElement,
       ...this.pages().nativeElement.querySelectorAll<HTMLElement>('.furniture'),
     ];
-    for (const el of moving) el.animate?.(keyframes, timing);
+  }
+
+  private canTurn(direction: 1 | -1): boolean {
+    return direction > 0 ? !this.atEnd() : !this.atStart();
+  }
+
+  private reducedMotion(): boolean {
+    return (
+      this.document.defaultView?.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false
+    );
+  }
+
+  private selectionCollapsed(): boolean {
+    return this.document.getSelection?.()?.isCollapsed ?? true;
+  }
+
+  /**
+   * True for the click a browser may send at the end of a drag or swipe. Clicks from the
+   * keyboard (detail 0) always count.
+   */
+  private swallowsClick(event: MouseEvent): boolean {
+    const swallow = this.swallowClick && event.detail > 0;
+    this.swallowClick = false;
+    return swallow;
   }
 
   private currentScreen(): { screen: Screen; spread: boolean } {

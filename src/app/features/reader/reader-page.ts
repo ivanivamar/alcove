@@ -1,69 +1,40 @@
-import { ChangeDetectionStrategy, Component, computed, input, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  input,
+  signal,
+  viewChild,
+} from '@angular/core';
 import { RouterLink } from '@angular/router';
+import tokens from '../../../../design/tokens.json';
 import { mockBook } from '../../core/mock-books';
 import { mockContentFor } from '../../core/mock-content';
+import { MOCK_SHELVES } from '../../core/mock-shelves';
 import { DEFAULT_PAPER, Paper, isPaper } from '../../core/paper';
+import { timeLeftInChapter } from '../../core/reading';
+import { backLabel, shelfOf } from '../../core/shelf';
 import { BookSpread, ReadingPosition } from '../../shared/book-spread/book-spread';
 import { Icon } from '../../shared/icon/icon';
+import { ProgressChapter, ShelfProgress } from '../../shared/shelf-progress/shelf-progress';
+import { Spine } from '../../shared/spine/spine';
 
 /**
  * The reader on /read/:id. The route only lets known books in, and opens the book at its saved
- * progress. Until the reader controls exist (spec §4.7), a plain link leads back to the library.
+ * progress, on the board it rests on with the progress slider along its edge (spec §4.6).
+ *
+ * The reader controls (spec §4.7) are hidden at rest. A tap or click in the middle third of the
+ * pages shows or hides them, and so does nothing else: tabbing into one shows them, and Escape
+ * hides them and puts focus back in the text. Hidden, they stay in the tab order and the
+ * accessibility tree, only faded out and not clickable.
  */
 @Component({
   selector: 'alc-reader-page',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink, Icon, BookSpread],
-  template: `
-    @if (book(); as book) {
-      <h1 class="alc-visually-hidden">{{ book.title }}</h1>
-      <nav class="bar" aria-label="Reader">
-        <a class="back" routerLink="/library"><alc-icon name="back" />Back to library</a>
-      </nav>
-      <alc-book-spread
-        class="book"
-        [book]="book"
-        [content]="content()"
-        [paper]="paper()"
-        [(page)]="page"
-        (positionChange)="position.set($event)"
-      />
-    }
-  `,
-  styles: `
-    :host {
-      display: flex;
-      flex-direction: column;
-      height: 100dvh;
-      padding: 0 var(--alc-gutter-phone) var(--alc-space-3);
-    }
-    .bar {
-      display: flex;
-      flex: none;
-    }
-    .back {
-      display: inline-flex;
-      align-items: center;
-      gap: var(--alc-space-1);
-      min-height: var(--alc-touch);
-      padding-inline-end: var(--alc-space-2);
-      font: var(--alc-type-label);
-      text-decoration: none;
-    }
-    .book {
-      flex: 1;
-    }
-    @media (min-width: 600px) {
-      :host {
-        padding: var(--alc-space-2) var(--alc-gutter-tablet) var(--alc-space-4);
-      }
-    }
-    @media (min-width: 1024px) {
-      :host {
-        padding-inline: var(--alc-gutter-desktop);
-      }
-    }
-  `,
+  imports: [RouterLink, Icon, Spine, BookSpread, ShelfProgress],
+  templateUrl: './reader-page.html',
+  styleUrl: './reader-page.css',
+  host: { '(document:keydown.escape)': 'onEscape()' },
 })
 export class ReaderPage {
   /** From the route. */
@@ -75,9 +46,47 @@ export class ReaderPage {
 
   protected readonly book = computed(() => mockBook(this.id()));
   protected readonly content = computed(() => mockContentFor(this.id()));
+  protected readonly backLabel = computed(() => backLabel(shelfOf(this.id(), MOCK_SHELVES)));
+  protected readonly spineScale = tokens.readerControls.backSpineScale;
 
   /** Null until the spread opens the book at its saved progress. */
   protected readonly page = signal<number | null>(null);
   /** The latest position, ready to save once reading positions are stored (spec §8). */
   readonly position = signal<ReadingPosition | null>(null);
+
+  readonly controlsShown = signal(false);
+
+  private readonly spread = viewChild(BookSpread);
+  protected readonly perView = computed(() => this.spread()?.perView() ?? 1);
+  private readonly layout = computed(() => this.spread()?.pageLayout() ?? null);
+
+  protected readonly chapters = computed<ProgressChapter[]>(() => {
+    const chapters = this.content()?.chapters ?? [];
+    return (this.layout()?.chapterStarts ?? []).map((start, i) => ({
+      start,
+      number: chapters[i]?.number ?? i + 1,
+      name: chapters[i]?.name ?? '',
+    }));
+  });
+  protected readonly chapterTimeLeft = computed(() => {
+    const book = this.book();
+    const position = this.position();
+    const layout = this.layout();
+    if (!book || !position || !layout || !this.content()) return '';
+    return timeLeftInChapter(book, { ...position, chapterStarts: layout.chapterStarts });
+  });
+
+  protected toggleControls(): void {
+    this.controlsShown.update((shown) => !shown);
+  }
+
+  protected showControls(): void {
+    this.controlsShown.set(true);
+  }
+
+  protected onEscape(): void {
+    if (!this.controlsShown()) return;
+    this.controlsShown.set(false);
+    this.spread()?.focusText();
+  }
 }
