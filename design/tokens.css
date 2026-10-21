@@ -392,3 +392,28 @@
   --alc-chapter-rule-weight: 2px;
   --alc-drop-cap-lines: 3;
 }
+
+/* ---------------------------------------------------------------- */
+/* Reader controls and shelf progress (spec §4.6, §4.7)              */
+/* Mirrored in tokens.json "readerControls", "progress" and          */
+/* "reader.swipe".                                                   */
+/* ---------------------------------------------------------------- */
+:root {
+  --alc-back-spine-scale: 0.15;    /* the book's spine in the back pill: 24–31 px tall */
+  --alc-reader-title-max: 40ch;    /* the title and author in the centre of the bar */
+  --alc-z-controls: 20;            /* the floating bar on phone, over the pages */
+
+  /* alc-shelf-progress, on the front face of the reader's board */
+  --alc-progress-rule: 2px;        /* the track; --alc-progress-track, the read part in lamp */
+  --alc-progress-notch: 1px;       /* where each chapter starts */
+  --alc-progress-notch-height: 6px;
+  --alc-progress-knob: 14px;
+  --alc-progress-halo: 3px;
+  --alc-progress-halo-color: color-mix(in srgb, var(--alc-lamp) 32%, transparent);
+  --alc-tooltip-gap: 8px;          /* between the knob and its tooltip */
+  --alc-tooltip-arrow: 8px;
+
+  /* Swipes on the pages (spec §5): further than this sideways turns, less is a tap. */
+  --alc-swipe-turn: 48px;
+  --alc-swipe-slop: 10px;
+}

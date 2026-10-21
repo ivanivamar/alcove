@@ -318,6 +318,220 @@ describe('BookSpread', () => {
     });
   });
 
+  describe('the middle third and swipes', () => {
+    async function setUp() {
+      const rendered = await render({ width: 800 });
+      const taps: number[] = [];
+      rendered.fixture.componentInstance.centreTap.subscribe(() => taps.push(1));
+      const pages = rendered.el.querySelector<HTMLElement>('.pages')!;
+      const text = rendered.el.querySelector<HTMLElement>('[data-block]')!;
+      return { ...rendered, taps, pages, text };
+    }
+
+    /** A pointer from (x, y) through each point, released at the last. Touch unless `type`. */
+    async function drag(
+      fixture: ComponentFixture<BookSpread>,
+      target: HTMLElement,
+      points: [number, number][],
+      { type = 'touch', release = 'pointerup' } = {},
+    ) {
+      const send = (name: string, [clientX, clientY]: [number, number]) =>
+        target.dispatchEvent(
+          new PointerEvent(name, {
+            pointerId: 7,
+            pointerType: type,
+            isPrimary: true,
+            clientX,
+            clientY,
+            bubbles: true,
+          }),
+        );
+      send('pointerdown', points[0]);
+      for (const point of points.slice(1)) send('pointermove', point);
+      send(release, points.at(-1)!);
+      await fixture.whenStable();
+    }
+
+    /** The click a browser sends after a pointer goes up (detail 1, unlike the keyboard's 0). */
+    async function tap(fixture: ComponentFixture<BookSpread>, target: HTMLElement) {
+      target.dispatchEvent(new MouseEvent('click', { bubbles: true, detail: 1 }));
+      await fixture.whenStable();
+    }
+
+    it('reports a tap or click in the middle third', async () => {
+      const { fixture, taps, text } = await setUp();
+      await drag(fixture, text, [[200, 300]]);
+      await tap(fixture, text);
+      expect(taps.length).toBe(1);
+      expect(folios(fixture.nativeElement)).toEqual(['6']);
+    });
+
+    it('turns, without reporting a tap, from the turn buttons', async () => {
+      const { fixture, el, taps } = await setUp();
+      await tap(fixture, el.querySelector<HTMLElement>('.next')!);
+      expect(taps.length).toBe(0);
+      expect(folios(el)).toEqual(['7']);
+    });
+
+    it('leaves a click alone that selects text or clears a selection', async () => {
+      const { fixture, taps, text } = await setUp();
+      document.getSelection()!.selectAllChildren(text);
+      await tap(fixture, text);
+      expect(taps.length).toBe(0);
+
+      // The selection is cleared by the time of the click, but was there when the press began.
+      await drag(fixture, text, [[200, 300]], { type: 'mouse' });
+      document.getSelection()!.removeAllRanges();
+      await tap(fixture, text);
+      expect(taps.length).toBe(0);
+
+      await drag(fixture, text, [[200, 300]], { type: 'mouse' });
+      await tap(fixture, text);
+      expect(taps.length).toBe(1);
+    });
+
+    it('allows a few pixels of wobble in a tap', async () => {
+      const { fixture, taps, text } = await setUp();
+      await drag(fixture, text, [
+        [200, 300],
+        [206, 305],
+      ]);
+      await tap(fixture, text);
+      expect(taps.length).toBe(1);
+    });
+
+    it('turns forward on a swipe to the left and back on a swipe to the right', async () => {
+      const { fixture, el, taps, text } = await setUp();
+      await drag(fixture, text, [
+        [300, 300],
+        [260, 302],
+        [200, 305],
+      ]);
+      expect(folios(el)).toEqual(['7']);
+      await tap(fixture, text); // the click some browsers send after the swipe
+      expect(taps.length).toBe(0);
+      await drag(fixture, text, [
+        [100, 300],
+        [220, 300],
+      ]);
+      expect(folios(el)).toEqual(['6']);
+      expect(fixture.componentInstance.page()).toBe(5);
+    });
+
+    it('moves the text with the finger, and lets go on release', async () => {
+      const { fixture, el, text } = await setUp();
+      const flow = el.querySelector<HTMLElement>('.flow')!;
+      const down = { pointerId: 7, pointerType: 'touch', isPrimary: true, bubbles: true };
+      text.dispatchEvent(new PointerEvent('pointerdown', { ...down, clientX: 300, clientY: 300 }));
+      text.dispatchEvent(new PointerEvent('pointermove', { ...down, clientX: 270, clientY: 300 }));
+      expect(parseFloat(flow.style.translate)).toBe(-30);
+      text.dispatchEvent(new PointerEvent('pointerup', { ...down, clientX: 270, clientY: 300 }));
+      await fixture.whenStable();
+      expect(flow.style.translate).toBe('');
+      expect(folios(el)).toEqual(['6']); // under --alc-swipe-turn: no turn
+    });
+
+    it('leaves a turn button alone when a swipe starts on it', async () => {
+      const { fixture, el } = await setUp();
+      const next = el.querySelector<HTMLElement>('.next')!;
+      await drag(fixture, next, [
+        [700, 300],
+        [600, 300],
+      ]);
+      await tap(fixture, next);
+      expect(folios(el)).toEqual(['7']);
+    });
+
+    it('leaves a vertical drag to the browser: no turn and no tap', async () => {
+      const { fixture, el, taps, text } = await setUp();
+      await drag(fixture, text, [
+        [200, 300],
+        [190, 200],
+        [140, 100],
+      ]);
+      await tap(fixture, text);
+      expect(folios(el)).toEqual(['6']);
+      expect(taps.length).toBe(0);
+
+      // Or the browser takes it over and cancels the pointer.
+      await drag(
+        fixture,
+        text,
+        [
+          [300, 300],
+          [200, 300],
+        ],
+        { release: 'pointercancel' },
+      );
+      expect(folios(el)).toEqual(['6']);
+      expect(el.querySelector<HTMLElement>('.flow')!.style.translate).toBe('');
+    });
+
+    it('only swipes on touch: a mouse drag selects text', async () => {
+      const { fixture, el, text } = await setUp();
+      await drag(
+        fixture,
+        text,
+        [
+          [300, 300],
+          [100, 300],
+        ],
+        { type: 'mouse' },
+      );
+      expect(folios(el)).toEqual(['6']);
+    });
+
+    it('stops at the first and last pages, without following the finger', async () => {
+      const { fixture, el, text } = await setUp();
+      for (let i = 0; i < 6; i++) await click(fixture, '.previous');
+      expect(folios(el)).toEqual(['1']);
+      const flow = el.querySelector<HTMLElement>('.flow')!;
+      const touch = { pointerId: 7, pointerType: 'touch', isPrimary: true, bubbles: true };
+      text.dispatchEvent(new PointerEvent('pointerdown', { ...touch, clientX: 100, clientY: 300 }));
+      text.dispatchEvent(new PointerEvent('pointermove', { ...touch, clientX: 260, clientY: 300 }));
+      expect(flow.style.translate).toBe('');
+      text.dispatchEvent(new PointerEvent('pointerup', { ...touch, clientX: 260, clientY: 300 }));
+      await fixture.whenStable();
+      expect(folios(el)).toEqual(['1']);
+
+      for (let i = 0; i < 12; i++) await click(fixture, '.next');
+      expect(folios(el)).toEqual(['10']);
+      await drag(fixture, text, [
+        [300, 300],
+        [100, 300],
+      ]);
+      expect(folios(el)).toEqual(['10']);
+    });
+
+    it('never swallows a click from the keyboard', async () => {
+      const { fixture, el, text } = await setUp();
+      await drag(fixture, text, [
+        [300, 300],
+        [200, 300],
+      ]);
+      expect(folios(el)).toEqual(['7']);
+      // No click came after the swipe; Enter on a turn button still turns.
+      await click(fixture, '.next');
+      expect(folios(el)).toEqual(['8']);
+    });
+
+    it('puts focus back in the text on request', async () => {
+      const { fixture, el } = await setUp();
+      await click(fixture, '.next');
+      fixture.componentInstance.focusText();
+      expect(document.activeElement).toBe(el.querySelectorAll('[data-block]')[6]);
+    });
+
+    it('shares where the text fell and how many pages show', async () => {
+      const { fixture } = await setUp();
+      expect(fixture.componentInstance.pageLayout()).toEqual({
+        pageCount: 10,
+        chapterStarts: [0, 6],
+      });
+      expect(fixture.componentInstance.perView()).toBe(1);
+    });
+  });
+
   describe("when the book's text isn't available", () => {
     it('says so on the page and puts focus there', async () => {
       const { el } = await render({ text: null });

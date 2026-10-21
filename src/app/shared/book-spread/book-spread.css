@@ -60,6 +60,8 @@
   width: calc(var(--views) * (var(--alc-measure) + 2 * var(--margin)));
   min-width: 0;
   font: var(--alc-type-read);
+  /* Swipes sideways are the spread's; scrolling and zooming stay the browser's. */
+  touch-action: pan-y pinch-zoom;
 }
 
 /* Lamp upper left: the gutter shade on the inner edge, darkening toward the bottom-right. */
@@ -146,8 +148,9 @@
   background: none;
   cursor: pointer;
 }
+/* No focus indicator: a ring would outline a third of the page. */
 .turn:focus-visible {
-  outline-offset: calc(var(--alc-space-1) * -1);
+  outline: none;
 }
 .turn[aria-disabled] {
   cursor: default;

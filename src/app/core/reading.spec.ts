@@ -1,6 +1,14 @@
 import { Book } from './book';
 import { MOCK_BOOKS } from './mock-books';
-import { currentlyReading, formatTimeLeft, minutesLeft, percentRead, timeLeft } from './reading';
+import {
+  currentlyReading,
+  formatTimeLeft,
+  minutesLeft,
+  minutesLeftInChapter,
+  percentRead,
+  timeLeft,
+  timeLeftInChapter,
+} from './reading';
 
 describe('minutesLeft', () => {
   it('divides the pages left by 1.3 pages a minute', () => {
@@ -46,6 +54,49 @@ describe('formatTimeLeft', () => {
 
   it('formats a book directly', () => {
     expect(timeLeft({ pages: 880, progress: 0.18 })).toBe('9 h 20 min left');
+  });
+});
+
+describe('minutesLeftInChapter', () => {
+  // 100 laid-out pages; chapters start on pages 0, 40 and 90.
+  const at = (page: number) => ({ page, pageCount: 100, chapterStarts: [0, 40, 90] });
+
+  it("counts from the page on screen to the next chapter, in the book's own pages", () => {
+    // Page 10: 30 of 100 laid-out pages, so 30% of 260 = 78 pages, 60 min.
+    expect(minutesLeftInChapter(260, at(10))).toBe(60);
+    // Page 39: 1 laid-out page = 2.6 pages, 2 min.
+    expect(minutesLeftInChapter(260, at(39))).toBe(2);
+  });
+
+  it('starts again at each chapter, rounding to 10 minutes from an hour up', () => {
+    // Page 40: 50 laid-out pages = 130 pages, 100 min.
+    expect(minutesLeftInChapter(260, at(40))).toBe(100);
+  });
+
+  it('runs the last chapter to the end of the book', () => {
+    // Page 95: 5 laid-out pages = 13 pages, 10 min.
+    expect(minutesLeftInChapter(260, at(95))).toBe(10);
+  });
+
+  it('never says 0 on the last page, and clamps pages outside the book', () => {
+    expect(minutesLeftInChapter(260, at(99))).toBe(2);
+    expect(minutesLeftInChapter(260, at(140))).toBe(2);
+    // Page 0: 40 laid-out pages = 104 pages, 80 min.
+    expect(minutesLeftInChapter(260, at(-5))).toBe(80);
+  });
+
+  it('counts text before the first chapter up to it', () => {
+    // 2 of 10 laid-out pages = 26 pages, 20 min.
+    expect(minutesLeftInChapter(130, { page: 0, pageCount: 10, chapterStarts: [2] })).toBe(20);
+  });
+
+  it('is 0 before anything is laid out', () => {
+    expect(minutesLeftInChapter(260, { page: 0, pageCount: 0, chapterStarts: [] })).toBe(0);
+  });
+
+  it('formats as time left in chapter', () => {
+    expect(timeLeftInChapter({ pages: 260 }, at(10))).toBe('1 h left in chapter');
+    expect(timeLeftInChapter({ pages: 260 }, at(95))).toBe('10 min left in chapter');
   });
 });
 

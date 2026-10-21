@@ -31,6 +31,20 @@ describe('Spine', () => {
     expect(el.querySelector('.body')!.getAttribute('aria-hidden')).toBe('true');
   });
 
+  it('can be just a picture, for a spine inside another control', () => {
+    const fixture = TestBed.createComponent(Spine);
+    fixture.componentRef.setInput('book', book);
+    fixture.componentRef.setInput('decorative', true);
+    fixture.componentRef.setInput('scale', 0.15);
+    fixture.detectChanges();
+    const el = fixture.nativeElement as HTMLElement;
+    expect(el.querySelector('button')).toBeNull();
+    const spine = el.querySelector<HTMLElement>('.spine')!;
+    expect(spine.getAttribute('aria-hidden')).toBe('true');
+    expect(spine.hasAttribute('aria-label')).toBe(false);
+    expect(spine.style.width).toBe('3px');
+  });
+
   it('sizes itself from the page count', () => {
     const button = render(book).querySelector('button')!;
     expect(button.style.width).toBe('20px');
