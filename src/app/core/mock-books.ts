@@ -34,3 +34,7 @@ export const MOCK_BOOKS: readonly Book[] = [
   { id: 'bk-odyssey', title: 'The Odyssey', author: 'Homer', pages: 541, status: 'finished', progress: 1, offline: onDevice, spine: { style: 'bold', color: 'straw' } },
   { id: 'bk-gatsby', title: 'The Great Gatsby', author: 'F. Scott Fitzgerald', pages: 180, status: 'to-read', progress: 0, offline: onDevice, spine: { style: 'band', color: 'forest' } },
 ];
+
+export function mockBook(id: string): Book | undefined {
+  return MOCK_BOOKS.find((book) => book.id === id);
+}

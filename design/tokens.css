@@ -127,9 +127,11 @@
   --alc-type-read: 400 19px/1.6 var(--alc-font-read);             /* 14–28 px, user adjustable */
   --alc-type-chapter: italic 400 30px/38px var(--alc-font-display);
   --alc-type-ledge-title: 500 17px/22px var(--alc-font-display);  /* book names beside ledge covers */
+  --alc-type-running-head: 600 10px/16px var(--alc-font-ui);      /* reader running heads, uppercase */
+  --alc-type-folio: italic 400 14px/16px var(--alc-font-display); /* reader page numbers */
   --alc-tracking-caption: 0.12em;
   --alc-tracking-running-head: 0.22em;
-  --alc-measure: 66ch;                                            /* 60–75 characters */
+  --alc-measure: 31em;    /* ≈ 66 characters of the reading font (Literata averages 0.47em a glyph). Not ch: that is the width of "0" and gave ≈ 81. */
 }
 
 /* ---------------------------------------------------------------- */
@@ -148,7 +150,8 @@
   --alc-touch: 44px;          /* minimum hit area */
   --alc-rail-width: 72px;
   --alc-bottom-bar-height: 64px;  /* plus env(safe-area-inset-bottom) */
-  --alc-cloth-board: 14px;        /* boards around the reader pages (7px on phone) */
+  --alc-cloth-board: 14px;        /* boards around the reader pages */
+  --alc-cloth-board-phone: 7px;
   --alc-scrollbar-size: 8px;      /* every scrollbar: a wood thumb on a clear track ("thin" in Firefox) */
 
   /* One light source, upper left: shadows fall down and to the right. */
@@ -185,6 +188,7 @@
   --alc-close-home: 220ms 420ms;
 
   --alc-dur-page: 200ms;               /* fade + 24 px slide */
+  --alc-page-slide: 24px;
 }
 @media (prefers-reduced-motion: reduce) {
   :root { --alc-lift: 0px; --alc-dur-lift: 0ms; --alc-dur-sheet: 200ms; }
@@ -198,6 +202,7 @@
 :root {
   --alc-bp-tablet: 600px;
   --alc-bp-desktop: 1024px;
+  --alc-bp-spread: 960px;   /* the reader shows two pages side by side from here (spec §3) */
   --alc-z-rail: 10;
   --alc-z-sheet: 40;
   --alc-z-popover: 50;
@@ -358,4 +363,32 @@
 
   /* "Time left" assumes this reading speed until the reader measures the user's own. */
   --alc-reading-pages-per-minute: 1.3;
+}
+
+/* ---------------------------------------------------------------- */
+/* Reader (alc-book-spread, spec §4.5)                               */
+/* Mirrored in tokens.json "reader", which the page-edge function    */
+/* and the paper contrast test read.                                 */
+/* ---------------------------------------------------------------- */
+:root {
+  /* Page margins: the text sits this far inside each page edge. Phone is the "medium" margin
+     (spec §4.8); the Aa panel will make them adjustable. */
+  --alc-page-margin-phone: 24px;
+  --alc-page-margin-tablet: 32px;
+  --alc-page-margin-desktop: 48px;
+  --alc-page-head: 48px;           /* band at the top of a page holding the running head */
+  --alc-page-foot: 48px;           /* band at the foot holding the folio */
+
+  /* Lamp upper left: a shade along the gutter and a faint darkening toward the bottom-right.
+     Under the darkest corner every paper's ink and muted ink still reach 4.5:1. */
+  --alc-page-gutter: 10%;                          /* of the page width, from the inner edge */
+  --alc-page-gutter-shade: rgba(0, 0, 0, .16);
+  --alc-page-falloff: linear-gradient(135deg, transparent 50%, rgba(0, 0, 0, .06));
+
+  --alc-page-edge-layers: 8;       /* read side max(1, round(read × 8)), unread side the rest */
+
+  /* Chapter opener */
+  --alc-chapter-rule: 36px;        /* the amber rule under the chapter name */
+  --alc-chapter-rule-weight: 2px;
+  --alc-drop-cap-lines: 3;
 }
