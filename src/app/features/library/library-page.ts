@@ -1,11 +1,13 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { MOCK_BOOKS } from '../../core/mock-books';
 import { Icon } from '../../shared/icon/icon';
+import { Spine } from '../../shared/spine/spine';
 
 @Component({
   selector: 'alc-library-page',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink, Icon],
+  imports: [RouterLink, Icon, Spine],
   template: `
     <header class="header">
       <h1>Library</h1>
@@ -14,7 +16,12 @@ import { Icon } from '../../shared/icon/icon';
         <alc-icon name="plus" />
       </a>
     </header>
-    <p class="note">The bookcase goes here.</p>
+    <!-- Temporary row until alc-bookcase and alc-shelf-row land. -->
+    <ul class="spines" aria-label="Books">
+      @for (book of books; track book.id) {
+        <li><alc-spine [book]="book" /></li>
+      }
+    </ul>
   `,
   styles: `
     .header {
@@ -27,8 +34,14 @@ import { Icon } from '../../shared/icon/icon';
       margin: 0;
       font: var(--alc-type-display-l);
     }
-    .note {
-      color: var(--alc-ink-muted);
+    .spines {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-end;
+      gap: var(--alc-space-4) var(--alc-shelf-spine-gap);
+      margin: var(--alc-space-5) 0 0;
+      padding: 0;
+      list-style: none;
     }
     .import {
       display: grid;
@@ -46,4 +59,6 @@ import { Icon } from '../../shared/icon/icon';
     }
   `,
 })
-export class LibraryPage {}
+export class LibraryPage {
+  protected readonly books = MOCK_BOOKS;
+}
