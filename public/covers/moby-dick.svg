@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 300" width="200" height="300">
+  <!-- Generated demo cover for the mock library. -->
+  <defs>
+    <linearGradient id="sea" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#2C5070"/>
+      <stop offset=".55" stop-color="#1F3A52"/>
+      <stop offset="1" stop-color="#132536"/>
+    </linearGradient>
+  </defs>
+  <rect width="200" height="300" fill="url(#sea)"/>
+  <g fill="none" stroke="#9FC2D6" stroke-width="1.5" stroke-linecap="round" opacity=".7">
+    <path d="M0 196c20-8 30 8 50 0s30 8 50 0 30 8 50 0 30 8 50 0"/>
+    <path d="M0 212c20-8 30 8 50 0s30 8 50 0 30 8 50 0 30 8 50 0" opacity=".6"/>
+  </g>
+  <path d="M100 196c-2-16-6-26-18-34 14 2 20 6 18 0 0-14 6-24 18-30-6 12-8 22-4 34 4 10 4 20-14 30z" fill="#EDE6D6"/>
+  <text x="100" y="62" fill="#EDE6D6" font-family="Georgia, serif" font-size="30" text-anchor="middle" letter-spacing="1">MOBY-DICK</text>
+  <text x="100" y="84" fill="#9FC2D6" font-family="Georgia, serif" font-size="12" font-style="italic" text-anchor="middle">or, The Whale</text>
+  <text x="100" y="262" fill="#EDE6D6" font-family="Georgia, serif" font-size="13" text-anchor="middle" letter-spacing="2">HERMAN MELVILLE</text>
+</svg>

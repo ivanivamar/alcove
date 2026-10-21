@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 300" width="200" height="300">
+  <!-- Generated demo cover for the mock library. -->
+  <rect width="200" height="300" fill="#3B5644"/>
+  <rect x="12" y="12" width="176" height="276" fill="none" stroke="#D9C38A" stroke-width="1.5"/>
+  <rect x="18" y="18" width="164" height="264" fill="none" stroke="#D9C38A" stroke-width=".75"/>
+  <g fill="none" stroke="#D9C38A" stroke-width="1.5" stroke-linecap="round">
+    <path d="M100 196c-14-10-22-24-22-38 8 6 16 8 22 6 6 2 14 0 22-6 0 14-8 28-22 38z"/>
+    <path d="M100 196v28M88 214c6 0 10 4 12 10M112 214c-6 0-10 4-12 10"/>
+  </g>
+  <text x="100" y="92" fill="#F1E6C8" font-family="Georgia, serif" font-size="21" text-anchor="middle" letter-spacing=".5">MIDDLEMARCH</text>
+  <path d="M70 108h60" stroke="#D9C38A" stroke-width="1"/>
+  <text x="100" y="130" fill="#D9C38A" font-family="Georgia, serif" font-size="11" font-style="italic" text-anchor="middle">A Study of Provincial Life</text>
+  <text x="100" y="262" fill="#F1E6C8" font-family="Georgia, serif" font-size="13" text-anchor="middle" letter-spacing="2">GEORGE ELIOT</text>
+</svg>

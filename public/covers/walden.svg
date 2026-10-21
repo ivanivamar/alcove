@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 300" width="200" height="300">
+  <!-- Generated demo cover for the mock library. -->
+  <rect width="200" height="300" fill="#C9B57E"/>
+  <circle cx="138" cy="88" r="20" fill="#E8D9A8"/>
+  <path d="M0 176l34-46 22 26 30-50 36 58 24-30 54 42v24H0z" fill="#5E6F45"/>
+  <path d="M0 182h200v52H0z" fill="#4C6A6A"/>
+  <g stroke="#A9C3BC" stroke-width="1.25" stroke-linecap="round" opacity=".8">
+    <path d="M24 196h40M92 204h56M40 216h30M120 222h44"/>
+  </g>
+  <text x="100" y="58" fill="#2E2A20" font-family="Georgia, serif" font-size="30" text-anchor="middle" letter-spacing="2">WALDEN</text>
+  <text x="100" y="268" fill="#2E2A20" font-family="Georgia, serif" font-size="12" text-anchor="middle" letter-spacing="2">H. D. THOREAU</text>
+</svg>
