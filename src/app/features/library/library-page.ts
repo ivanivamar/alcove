@@ -1,13 +1,15 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { MOCK_BOOKS } from '../../core/mock-books';
+import { MOCK_SHELVES } from '../../core/mock-shelves';
+import { Bookcase } from '../../shared/bookcase/bookcase';
 import { Icon } from '../../shared/icon/icon';
-import { Spine } from '../../shared/spine/spine';
+import { SpineDensity } from '../../shared/spine/spine-geometry';
 
 @Component({
   selector: 'alc-library-page',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink, Icon, Spine],
+  imports: [RouterLink, Icon, Bookcase],
   template: `
     <header class="header">
       <h1>Library</h1>
@@ -16,12 +18,7 @@ import { Spine } from '../../shared/spine/spine';
         <alc-icon name="plus" />
       </a>
     </header>
-    <!-- Temporary row until alc-bookcase and alc-shelf-row land. -->
-    <ul class="spines" aria-label="Books">
-      @for (book of books; track book.id) {
-        <li><alc-spine [book]="book" /></li>
-      }
-    </ul>
+    <alc-bookcase class="bookcase" [shelves]="shelves" [books]="books" [density]="density()" />
   `,
   styles: `
     .header {
@@ -34,14 +31,8 @@ import { Spine } from '../../shared/spine/spine';
       margin: 0;
       font: var(--alc-type-display-l);
     }
-    .spines {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: flex-end;
-      gap: var(--alc-space-4) var(--alc-shelf-spine-gap);
-      margin: var(--alc-space-5) 0 0;
-      padding: 0;
-      list-style: none;
+    .bookcase {
+      margin-top: var(--alc-space-5);
     }
     .import {
       display: grid;
@@ -60,5 +51,11 @@ import { Spine } from '../../shared/spine/spine';
   `,
 })
 export class LibraryPage {
+  /** From `?density=compact` until Settings owns it. */
+  readonly density = input<SpineDensity, string | undefined>('comfortable', {
+    transform: (value) => (value === 'compact' ? 'compact' : 'comfortable'),
+  });
+
+  protected readonly shelves = MOCK_SHELVES;
   protected readonly books = MOCK_BOOKS;
 }

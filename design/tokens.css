@@ -261,3 +261,43 @@
   --alc-spine-opacity-offline: 0.42;   /* spec §8 */
   --alc-spine-saturate-offline: 0.4;
 }
+
+/* ---------------------------------------------------------------- */
+/* Bookcase (alc-bookcase, alc-shelf-row, spec §4.3)                 */
+/* Mirrored in tokens.json "bookcase" and "shelf", which the layout  */
+/* and wrapping functions read.                                      */
+/* ---------------------------------------------------------------- */
+:root {
+  --alc-cabinet-side: 14px;        /* wood side panels */
+  --alc-cabinet-top: 14px;         /* top board */
+  --alc-bay-divider: 12px;         /* wood between bays */
+  --alc-bookcase-columns-phone: 1fr;
+  --alc-bookcase-columns-tablet: 1fr 1fr;
+  --alc-bookcase-columns-desktop: 1.35fr 1fr 1fr;
+
+  --alc-shelf-pad: 16px;           /* bay padding, and head room above each row of spines */
+  --alc-shelf-density-compact: 0.75;   /* compact multiplies shelf padding (spec §2) */
+
+  --alc-board: 16px;               /* lit top + front + underside */
+  --alc-board-top: 3px;
+  --alc-board-front: 9px;
+  --alc-board-under: 4px;
+
+  --alc-bookend-width: 5px;
+  --alc-bookend-height: 112px;     /* × 0.85 in compact, like the spines */
+  --alc-bookend-light: linear-gradient(135deg, rgba(255, 255, 255, .22) 0, rgba(255, 255, 255, 0) 60%);
+  --alc-shelf-slot-width: 32px;    /* empty bay: an average spine (≈ 470 pages, 183 px tall) */
+  --alc-shelf-slot-height: 183px;
+
+  /* The lamp from the upper left, and the shade under the board above. */
+  --alc-bay-lamp: radial-gradient(130% 90% at 0 0, var(--alc-glow), transparent 70%);
+  --alc-bay-inset: inset 0 12px 14px -10px rgba(0, 0, 0, .7);
+}
+:root[data-theme="light"] {
+  --alc-bay-inset: inset 0 10px 12px -10px rgba(80, 55, 30, .3);
+}
+@media (prefers-color-scheme: light) {
+  :root[data-theme="system"] {
+    --alc-bay-inset: inset 0 10px 12px -10px rgba(80, 55, 30, .3);
+  }
+}

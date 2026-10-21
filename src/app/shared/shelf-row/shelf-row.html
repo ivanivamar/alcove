@@ -1,0 +1,38 @@
+<h2 class="label" [id]="labelId()">
+  <a [routerLink]="shelf().route">
+    <span class="name">{{ shelf().name }}</span
+    ><span class="alc-visually-hidden">, </span>
+    <span class="count"
+      >{{ books().length }}<span class="alc-visually-hidden"> {{ countLabel() }}</span></span
+    >
+  </a>
+</h2>
+
+@if (books().length) {
+  <ul class="books" [attr.aria-labelledby]="labelId()">
+    @for (spine of layout().spines; track spine.book.id) {
+      <li [style.left.px]="spine.left" [style.bottom.px]="spine.bottom">
+        <alc-spine [book]="spine.book" [density]="density()" />
+      </li>
+    }
+  </ul>
+} @else {
+  <div class="empty">
+    <span class="slot" aria-hidden="true"></span>
+    <span class="bookend" aria-hidden="true"></span>
+    <p class="empty-text">Nothing on this shelf yet.</p>
+  </div>
+}
+
+<div aria-hidden="true">
+  @for (bottom of layout().boards; track $index) {
+    <span class="board" [style.bottom.px]="bottom"></span>
+  }
+  @if (books().length) {
+    <span
+      class="bookend"
+      [style.left.px]="layout().bookend.left"
+      [style.bottom.px]="layout().bookend.bottom"
+    ></span>
+  }
+</div>
