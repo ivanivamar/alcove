@@ -188,6 +188,7 @@ Icons are line icons on a 24 px grid with a 1.5 px stroke and round caps. Icon-o
 - Text contrast is at least 4.5:1 in both app themes and all four papers.
 - Every control is a real `<button>`, `<a>` or `<input>`, with a 44 px hit area.
 - Focus is a 2 px accent outline with a 3 px offset. Spines and covers get it too.
+  - **Exception:** the reader's page-turn zones (the left and right thirds of the pages, §4.5) show no focus indicator. A ring would outline a third of the page. This is a deliberate departure from WCAG 2.4.7; the arrow keys and Page Up/Down turn pages without focusing them.
 - Spines and covers have descriptive labels (see 4.1). Decorative wood, edges and texture are `aria-hidden`.
 - Status is never shown by colour alone: there is always an icon, a word or a shape.
 - Live regions: search result counts (polite), sync status, toasts.
