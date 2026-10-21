@@ -31,6 +31,33 @@
   scroll-snap-type: x mandatory;
   scroll-padding-inline: var(--pad);
 }
+
+/* A thin wood thumb on a clear track, inset to line up with the covers. Chrome and Safari take
+   these: no arrow buttons, a rounded thumb. In Chrome the standard properties below would
+   override them and bring the arrows back on Windows, so those are for Firefox only. */
+.scroller::-webkit-scrollbar {
+  height: var(--alc-scrollbar-size);
+}
+.scroller::-webkit-scrollbar-track {
+  margin-inline: var(--pad);
+  background: transparent;
+}
+.scroller::-webkit-scrollbar-thumb {
+  border-radius: var(--alc-scrollbar-size);
+  background: var(--alc-scrollbar-thumb);
+}
+.scroller::-webkit-scrollbar-thumb:hover {
+  background: var(--alc-scrollbar-thumb-hover);
+}
+@supports not selector(::-webkit-scrollbar) {
+  .scroller {
+    scrollbar-width: thin;
+    scrollbar-color: var(--alc-scrollbar-thumb) transparent;
+  }
+  .scroller:hover {
+    scrollbar-color: var(--alc-scrollbar-thumb-hover) transparent;
+  }
+}
 .track {
   position: relative;
   width: max-content;
