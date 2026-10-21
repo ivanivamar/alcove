@@ -1,0 +1,160 @@
+/* The open book. Sizes come from tokens.css; the host classes come from the breakpoints:
+   .phone and .tablet change the boards and margins, .two-up shows a spread. */
+:host {
+  --board: var(--alc-cloth-board);
+  --margin: var(--alc-page-margin-desktop);
+  --views: 1;
+
+  display: flex;
+  justify-content: center;
+  min-height: 0;
+  color: var(--alc-page-ink);
+}
+:host(.tablet) {
+  --margin: var(--alc-page-margin-tablet);
+}
+:host(.phone) {
+  --board: var(--alc-cloth-board-phone);
+  --margin: var(--alc-page-margin-phone);
+}
+:host(.two-up) {
+  --views: 2;
+}
+
+/* Boards behind the pages, showing --board all round: the cloth, its weave and the shading. */
+.book {
+  position: relative;
+  display: flex;
+  max-width: 100%;
+  height: 100%;
+  padding: var(--board);
+}
+.boards {
+  position: absolute;
+  inset: 0;
+  border-radius: var(--alc-radius-book);
+  background: var(--alc-spine-round), var(--alc-spine-weave), var(--cloth);
+  box-shadow: var(--alc-elev-1);
+}
+
+/* Page-edge stacks: alternating 1 px lines, read pages on the left, unread on the right. */
+.edges {
+  position: relative;
+  display: flex;
+  flex: none;
+}
+.layer {
+  width: 1px;
+  background: var(--alc-page-edge);
+}
+.layer:nth-child(even) {
+  background: var(--alc-page-edge-dark);
+}
+
+/* As wide as a measure plus margins per page, narrower when the window is. --alc-measure is in
+   em, so the reading font is set here. */
+.pages {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(var(--views), 1fr);
+  width: calc(var(--views) * (var(--alc-measure) + 2 * var(--margin)));
+  min-width: 0;
+  font: var(--alc-type-read);
+}
+
+/* Lamp upper left: the gutter shade on the inner edge, darkening toward the bottom-right. */
+.page {
+  position: relative;
+  min-width: 0;
+  background: var(--alc-page-falloff), var(--gutter), var(--alc-page);
+}
+.verso {
+  --gutter: linear-gradient(
+    to left,
+    var(--alc-page-gutter-shade),
+    transparent var(--alc-page-gutter)
+  );
+}
+.recto {
+  --gutter: linear-gradient(
+    to right,
+    var(--alc-page-gutter-shade),
+    transparent var(--alc-page-gutter)
+  );
+}
+
+.furniture {
+  position: absolute;
+  inset-inline: var(--margin);
+  overflow: hidden;
+  color: var(--alc-page-muted);
+  text-align: center;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.head {
+  top: 0;
+  font: var(--alc-type-running-head);
+  line-height: var(--alc-page-head);
+  letter-spacing: var(--alc-tracking-running-head);
+  text-transform: uppercase;
+}
+.folio {
+  bottom: 0;
+  font: var(--alc-type-folio);
+  line-height: var(--alc-page-foot);
+}
+
+/* The text area of every page on screen. The flow overflows into one column per page and the
+   viewport scrolls to the current one (see paginator.ts). */
+.viewport {
+  position: absolute;
+  inset: var(--alc-page-head) var(--margin) var(--alc-page-foot);
+  overflow: hidden;
+}
+.flow {
+  height: 100%;
+  column-count: var(--views);
+  column-gap: calc(2 * var(--margin));
+  column-fill: auto;
+}
+/* Starts a column after the text: its page is the page count, and it leaves room to scroll to
+   a last spread whose right-hand page is blank. */
+.end {
+  display: block;
+  height: 1px;
+  break-before: column;
+}
+.unavailable {
+  margin: 0;
+  padding-top: var(--alc-space-6);
+  color: var(--alc-page-muted);
+  font-style: italic;
+}
+.unavailable:focus {
+  outline: none;
+}
+
+/* Page turns: the outer thirds. The middle third stays free for the reader controls. */
+.turn {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: calc(100% / 3);
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+.turn:focus-visible {
+  outline-offset: calc(var(--alc-space-1) * -1);
+}
+.turn[aria-disabled] {
+  cursor: default;
+}
+.previous {
+  left: 0;
+}
+.next {
+  right: 0;
+}

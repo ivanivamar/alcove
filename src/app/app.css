@@ -35,3 +35,15 @@
     padding-inline: var(--alc-gutter-desktop);
   }
 }
+
+/* The reader fills the window: its own controls replace the rail and the bottom bar. */
+:host(.immersive) {
+  grid-template-columns: 1fr;
+}
+:host(.immersive) .rail,
+:host(.immersive) .bottom-bar {
+  display: none;
+}
+:host(.immersive) .main {
+  padding: 0;
+}

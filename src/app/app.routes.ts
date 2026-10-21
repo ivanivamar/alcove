@@ -12,7 +12,7 @@ export const routes: Routes = [
   },
   { path: 'collections', title: 'Collections · Alcove', data: { heading: 'Collections' }, loadComponent: placeholder },
   { path: 'collections/:id', title: 'Collection · Alcove', data: { heading: 'Collection' }, loadComponent: placeholder },
-  { path: 'read/:id', title: 'Reader · Alcove', data: { heading: 'Reader' }, loadComponent: placeholder },
+  { path: 'read', loadChildren: () => import('./features/reader/reader.routes').then((m) => m.READER_ROUTES) },
   { path: 'search', title: 'Search · Alcove', data: { heading: 'Search' }, loadComponent: placeholder },
   { path: 'import', title: 'Import · Alcove', data: { heading: 'Import' }, loadComponent: placeholder },
   { path: 'sync', title: 'Sync · Alcove', data: { heading: 'Sync' }, loadComponent: placeholder },

@@ -1,0 +1,56 @@
+<div class="book" [style.--cloth]="cloth()">
+  <span class="boards" aria-hidden="true"></span>
+
+  <span class="edges" aria-hidden="true">
+    @for (layer of edges().read; track $index) {
+      <span class="layer"></span>
+    }
+  </span>
+
+  <div class="pages" #pages>
+    @for (slot of slots(); track $index) {
+      <div class="page" [class.verso]="slot.verso" [class.recto]="!slot.verso" aria-hidden="true">
+        @if (slot.page !== null) {
+          <span class="furniture head">{{ slot.head }}</span>
+          <span class="furniture folio">{{ slot.folio }}</span>
+        }
+      </div>
+    }
+
+    <div class="viewport" #viewport (scroll)="onScroll()">
+      <div class="flow" #flow>
+        @if (content(); as text) {
+          @for (chapter of text.chapters; track chapter.number) {
+            <alc-chapter-text [chapter]="chapter" />
+          }
+        } @else {
+          <p class="unavailable" data-block tabindex="-1">This book's text isn't available yet.</p>
+        }
+        <span class="end" data-flow-end aria-hidden="true"></span>
+      </div>
+    </div>
+
+    <button
+      type="button"
+      class="turn previous"
+      aria-label="Previous page"
+      [attr.aria-disabled]="atStart() || null"
+      (click)="previous()"
+    ></button>
+    <button
+      type="button"
+      class="turn next"
+      aria-label="Next page"
+      [attr.aria-disabled]="atEnd() || null"
+      (click)="next()"
+    ></button>
+  </div>
+
+  <span class="edges" aria-hidden="true">
+    @for (layer of edges().unread; track $index) {
+      <span class="layer"></span>
+    }
+  </span>
+</div>
+
+<p class="alc-visually-hidden" aria-live="polite">{{ announcement() }}</p>
